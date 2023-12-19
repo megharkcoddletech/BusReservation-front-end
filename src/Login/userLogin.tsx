@@ -9,29 +9,26 @@ const Login = () => {
   const [password, setPassword] = useState<string | number> ("");
   const credentials = { username, password };
 
-  const auth = async (e: any) => {
-    e.preventDefault();
-   await fetch("http://localhost:3001/userAuth/login", {
-      method: 'POST',
+  async function callApi(url:string = "", data  = {}){
+    const result = await fetch(url, {
+        method: 'POST',
       headers: {
         'Content-type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify(credentials),
+      body: JSON.stringify(data),
     })
-    .then(response => {
-      if (!response.ok){ 
-        throw new Error(`authentication failed`);
-      }
-      return response.json();
+    return result.json();
+  }
+  
+  const auth = async (e: any) => {
+    e.preventDefault();
+    callApi(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {
+        console.log(data);
+        if(data.success === true){
+            navigate('/home')
+        }
     })
-    .then(data => {
-      console.log(data);
-      navigate("/home"); 
-    })
-    .catch(error => {
-      console.error("Authentication error:", error);
-    });
   };
 
   return (
