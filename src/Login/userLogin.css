@@ -1,0 +1,17 @@
+.Login {
+    background-color: rgb(247, 247, 244);
+    width: 350px;
+    height: 350px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  .input {
+    margin: 20px 70px;
+  }
+  .loginbtn {
+    margin: 10px 80px;
+  }
+  .head {
+    text-align: center;
+  }
