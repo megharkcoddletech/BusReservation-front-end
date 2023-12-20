@@ -6,3 +6,8 @@
     padding: 10px 20px;
     text-align: center;
   }
+  nav {
+    display: flex;
+    align-items: baseline;
+    
+  }
