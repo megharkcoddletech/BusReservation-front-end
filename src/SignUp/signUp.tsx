@@ -4,16 +4,24 @@ import { useNavigate } from "react-router-dom";
 const SignUp = () => {
     const navigate = useNavigate();
 
-    const [name, setName] = useState(" ");
-    const [email, setEmail] = useState(" ");
-    const [age, setAge] = useState(" ");
-    const [contactNumber, setContactNumber] = useState(" ");
-    const [username, setUsername] = useState(" ");
-    const [password, setPassword] = useState(" ");
-    const[gender, setGender] = useState('');
-    console.log('ff', gender);
     
-    const credentials = {name,username,password, email,age, contactNumber, gender}
+    const initialValues = {
+      name: "",
+      username: "",
+      password: "",
+      email: "",
+      age: " ",
+      contactNumber: " ",
+      gender: null
+    }
+    const [data, setData] = useState(initialValues);
+    console.log('dd', data);
+    const handleChange = (e: any) => {
+      setData({ ...data, [e.target.name]: e.target.value.trim()});
+    }
+    console.log('m', data);
+    console.log('ty', typeof data);
+    
     async function api(url:string = "", data  = {}){
         const result = await fetch(url, {
             method: 'POST',
@@ -25,9 +33,19 @@ const SignUp = () => {
         })
         return result.json();
       }
+
 const register = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>{
+console.log(22);
+
   e.preventDefault();
-  api(`${process.env.REACT_APP_apiURL}/userAuth/signup`, credentials).then((data) => {
+  console.log('gender', data.gender);
+  
+if (!data.name || !data.username ||  !data.password || !data.email 
+  || !data.age || !data.contactNumber  || !data.gender ) {
+    alert('fill empty field')
+    console.log(data);
+} else { 
+  api(`${process.env.REACT_APP_apiURL}/userAuth/signup`, data).then((data) => {
     console.log(data);
     if(data.success === true){
         alert('user registered')
@@ -38,29 +56,31 @@ const register = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>{
     
   })
 }
+}
     return (
         <div className="signUp">
-            <h1>SignUp</h1>
-            <form>
-                <input type="text" onChange={(e) => setName(e.target.value.trim())} placeholder="name"/>
-                <input type="email" onChange = {(e) => setEmail(e.target.value.trim())} placeholder="email"/>
-                <input type="number" onChange = {(e) => setAge(e.target.value.trim())} placeholder="age"/>
-                <input type="number" onChange = {(e) => setContactNumber(e.target.value.trim())} placeholder="phone"/>
+          <div>
+          <h1>SignUp</h1>
+          </div>
+            <form className="signUpForm">
+              <div>
+              <input className="userInput" type="text" name="name" value={ data.name} onChange={ (e) => handleChange(e) } placeholder="name"/>
+                <input className="userInput" type="email" name="email" value={ data.email} onChange = { (e) => handleChange(e) } placeholder="email"/>
+                <input className="userInput" type="number" name="age" value = { data.age} onChange = { (e) => handleChange(e) } placeholder="age"/>
+                <input className="userInput" type="number" name="contactNumber" value={ data.contactNumber} onChange = { (e) => handleChange(e) } placeholder="phone"/>
+                <p>Gender</p>
                 <div className="gender">
-                    <p>Gender</p>
-                    <label htmlFor="gender">Female</label>
-                    <input type="radio"name="gender"value="feMale"onChange={(e) => setGender(e.target.value)}/>
-        
-                    <label htmlFor="gender">Male</label>
-                    <input type="radio"name="gender"value="male" onChange={(e) => setGender(e.target.value)}/>
-                    
-                    <label htmlFor="gender">Others</label>
-                    <input type="radio" name="gender" value="others" onChange={(e) => setGender(e.target.value)}/>
-                    
+                    <input type="radio"name="gender" value="female" checked = { data.gender === 'female'}onChange={ (e) => handleChange(e) }/>
+                    <label>{"female"}</label>
+                    <input type="radio"name="gender"value="male" checked = { data.gender === 'male'} onChange={(e) => handleChange(e) }/>
+                    <label>{"male"}</label>
+                    <input type="radio" name="gender" value="others" checked = { data.gender === 'others'} onChange={ (e) => handleChange(e) }/>
+                    <label>{"others"}</label>                    
                 </div>
-                <input type="text" onChange = {(e) => setUsername(e.target.value.trim())} placeholder="username"/>
-                <input type="text" onChange = {(e) => setPassword(e.target.value.trim())} placeholder="password"/>
-                <button className="signUp" onClick={(e) => register(e)}>sign up</button>
+                <input className="userInput" type="text" name="username" value={ data.username } onChange = { (e) => handleChange(e) } placeholder="username"/>
+                <input className="userInput" type="text" name="password" value={ data.password } onChange = { (e) => handleChange(e) } placeholder="password"/>
+              </div>
+                <button className="signUpbtn" onClick={(e) => register(e)}>sign up</button>
             </form>           
         </div>
     );
