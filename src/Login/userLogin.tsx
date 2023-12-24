@@ -37,7 +37,8 @@ const Login = () => {
     })
   };
   return (
-    <div className="outLogin">
+    <div className="loginMain">
+         <div className="outLogin">
       <div className='Login'>
         <h1>Login</h1>
         <form>
@@ -51,9 +52,11 @@ const Login = () => {
             Login
           </button>
         </form>
-        <a href="./signUp">Create new account</a>
+        <a className="createNew" href="./signUp">Create new account</a>
       </div>
     </div>
+    </div>
+
   );
 };
 
