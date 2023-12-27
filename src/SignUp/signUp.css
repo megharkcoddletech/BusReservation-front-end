@@ -1,7 +1,8 @@
 h1 {
     text-align: center;
 }
-.signUpForm{
+
+.signUpForm {
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -10,27 +11,31 @@ h1 {
     height: 500px;
     flex-wrap: wrap;
     flex: 1;
-    border-radius: 12px;    
+    border-radius: 12px;
 }
+
 .userInput {
     margin: 10px auto;
     padding: 6px 20px;
     border: 0;
     box-shadow: 0px 1px 0px 0px;
 }
-.gender{
+
+.gender {
     display: flex;
     direction: column;
     align-items: baseline;
     justify-content: space-evenly;
 }
+
 .signUpbtn {
     margin: 10px 80px;
     padding: 9px 20px;
     border-radius: 20px;
-    box-shadow: 1px 1px 3px 1px ;
+    box-shadow: 1px 1px 3px 1px;
 }
-.signUp{
+
+.signUp {
     width: 400px;
     background-color: cadetblue;
     margin: 0 auto;

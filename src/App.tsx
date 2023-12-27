@@ -10,11 +10,11 @@ import GetBus from './ViewBus/viewBus';
 function App() {
   return (
     <BrowserRouter>
-      <Routes> 
-        <Route path="/" element={<Login />}/>
+      <Routes>
+        <Route path="/" element={<Login />} />
         <Route path="/Home" element={<Home />} />
-        <Route path='/signUp' element={<SignUP/>} />
-        <Route path='/viewBus' element = {<GetBus/>}/>
+        <Route path='/signUp' element={<SignUP />} />
+        <Route path='/viewBus' element={<GetBus />} />
       </Routes>
     </BrowserRouter>
   );

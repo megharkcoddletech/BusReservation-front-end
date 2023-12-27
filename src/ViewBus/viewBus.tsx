@@ -1,12 +1,12 @@
 import React from "react";
 
 const GetBus = () => {
-    return(
-        
-        <p>
-          View Buses 
-        </p>
-    )
+
+  return (
+    <p className="head">
+      BUSES
+    </p>
+  )
 }
 
 export default GetBus;
