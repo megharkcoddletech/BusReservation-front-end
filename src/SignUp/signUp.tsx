@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import './signUp.css'
 import { useNavigate } from "react-router-dom";
+
 const SignUp = () => {
     const navigate = useNavigate();
 
-    
-    const initialValues = {
+    const [data, setData] = useState<{name:string; username:string;
+            password:string; email:string; age:string;
+          contactNumber:string; gender:string}>(
+      {
       name: "",
       username: "",
       password: "",
       email: "",
       age: " ",
       contactNumber: " ",
-      gender: null
-    }
-    const [data, setData] = useState(initialValues);
-    console.log('dd', data);
-    const handleChange = (e: any) => {
+      gender: ""
+      }
+    );
+    
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setData({ ...data, [e.target.name]: e.target.value.trim()});
     }
     console.log('m', data);

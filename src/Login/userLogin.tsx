@@ -4,11 +4,17 @@ import './userLogin.css';
 
 const Login = () => {
   const navigate = useNavigate(); 
-  const [username, setUsername] = useState<string | number> ("");
-  const [password, setPassword] = useState<string | number> ("");
-  const [isFalse, setIsFalse] = useState <boolean>(false) 
-  const credentials = { username, password };
 
+  const [credentials, setCredentials] = useState<{username:string; password:string}>(
+    {
+      username: "",
+      password: ""
+    }
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
+    setCredentials({...credentials, [e.target.name]: e.target.value.trim()})
+  }
   async function callApi(url:string = "", data  = {}){
     const result = await fetch(url, {
         method: 'POST',
@@ -27,12 +33,10 @@ const Login = () => {
         console.log(data);
         if(data.success === true){
           localStorage.setItem('user', data.data)
-          const us = localStorage.getItem('user')
-          console.log(us);
-          
             navigate('/home')
-        } else {
-          setIsFalse(!isFalse)
+        } 
+        else {
+          alert(data.message)
         }
     })
   };
@@ -43,10 +47,10 @@ const Login = () => {
         <h1>Login</h1>
         <form>
           <input className="input" type="text" placeholder="enter your username"
-            onChange={(e) => setUsername(e.target.value.trim())}
+            name="username" value={credentials.username} onChange={(e) => handleChange(e)}
           />
           <input className="input" type="password" placeholder="enter your password"
-            onChange={(e) => setPassword(e.target.value.trim())}
+            name="password" value={credentials.password} onChange={(e) => handleChange(e)}
           />
           <button className="loginbtn" onClick={(e) => auth(e)}>
             Login
@@ -56,7 +60,6 @@ const Login = () => {
       </div>
     </div>
     </div>
-
   );
 };
 
