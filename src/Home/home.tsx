@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import './home.css';
 import { RiAccountCircleLine } from "react-icons/ri";
 import { TbHome2 } from "react-icons/tb";
@@ -8,6 +8,10 @@ import { CiFacebook } from "react-icons/ci";
 import { FaTwitter } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineLogout } from "react-icons/ai";
+
+type Bus = {
+  startingPoint: string; destination: string; boardingTime: string; page: number
+}
 
 const Home = () => {
 
@@ -19,18 +23,19 @@ const Home = () => {
 
   function logout() {
     localStorage.setItem('user', '')
-    const us = localStorage.getItem('user')
-    console.log('c', us);
     navigate('/')
   }
-  const [busData, setBusData] = useState<{startingPoint: string; destination:string; boardingTime: string}>({
-    startingPoint: '',
-    destination: '',
-    boardingTime: '',
+
+  const [busData, setBusData] = useState<Bus>({
+    startingPoint: "",
+    destination: "",
+    boardingTime: "",
+    page: 1,
   })
-const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  setBusData({ ...busData, [e.target.name]: e.target.value.trim()})
-}
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBusData({ ...busData, [e.target.name]: e.target.value.trim() })
+  }
 
   const getBus = () => {
     navigate('/viewBus', { state: { busData } })
@@ -49,7 +54,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               <div>
               </div>
               <RiAccountCircleLine className="userIcon" onClick={viewUser} />
-              <AiOutlineLogout className="userIcon"  onClick={logout}/>
+              <AiOutlineLogout className="userIcon" onClick={logout} />
             </div>
           </div>
         </nav>
@@ -58,21 +63,20 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             <h2 className="grabBus">Grab Your Bus</h2>
             <div className="viewBus">
               <div className="row">
-                <input className="busInputs" type="text" value ={busData.startingPoint} onChange={(e) => handleChange(e)} name="startingPoint" placeholder="From" />
+                <input className="busInputs" type="text" value={busData.startingPoint} onChange={(e) => handleChange(e)} name="startingPoint" placeholder="From" />
               </div>
               <div className="row">
-                <input className="busInputs" type="text" value ={busData.destination} onChange={(e) => handleChange(e)} name="destination" placeholder="To" />
+                <input className="busInputs" type="text" value={busData.destination} onChange={(e) => handleChange(e)} name="destination" placeholder="To" />
               </div>
               <div className="row">
                 <input className="busInputs" type="time" value={busData.boardingTime} onChange={(e) => handleChange(e)} name="boardingTime" />
               </div>
               <div className="row">
-                <button className="search"><FiSearch className="searchIcon" onClick={ getBus }/>
+                <button className="search"><FiSearch className="searchIcon" onClick={getBus} />
                 </button>
               </div>
             </div>
           </div>
-
         </div>
         <div className="steps">
         </div>

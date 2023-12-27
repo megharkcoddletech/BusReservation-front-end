@@ -1,9 +1,10 @@
-.loginMain{
+.loginMain {
   display: flex;
   align-items: center;
   justify-content: space-around;
 }
-.outLogin{
+
+.outLogin {
   width: 500px;
   height: 500px;
   border-radius: 10px;
@@ -12,32 +13,38 @@
   justify-content: center;
   background-color: rgb(120, 192, 192);
 }
+
 .Login {
-    border-radius: 10px;
-    width: 300px;
-    height: 300px;
-    padding: 10px 20px;
-    text-align: center;
-  }
-  .input {
-    margin: 20px 70px;
-    border: 0px;
-    color: rgb(12, 118, 118);
-    box-shadow: 0px 1px 0px 0px;
-  }
-  .loginbtn {
-    margin: 10px 80px;
-    padding: 9px 20px;
-    border-radius: 20px;
-    box-shadow: 1px 1px 3px 1px ;
-  }
-  .head {
-    text-align: center;
-  }
-  .newAccount {
-    color: rgb(81, 81, 220);
-    font-size: 14px;
-  }
-  .createNew{
-    text-decoration: none;
-  }
+  border-radius: 10px;
+  width: 300px;
+  height: 300px;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.input {
+  margin: 20px 70px;
+  border: 0px;
+  color: rgb(12, 118, 118);
+  box-shadow: 0px 1px 0px 0px;
+}
+
+.loginbtn {
+  margin: 10px 80px;
+  padding: 9px 20px;
+  border-radius: 20px;
+  box-shadow: 1px 1px 3px 1px;
+}
+
+.head {
+  text-align: center;
+}
+
+.newAccount {
+  color: rgb(81, 81, 220);
+  font-size: 14px;
+}
+
+.createNew {
+  text-decoration: none;
+}
