@@ -10,3 +10,6 @@ head {
     justify-content: space-between;
     align-items:  baseline;
   }
+  .markedSeat{
+    display: flex;
+  }

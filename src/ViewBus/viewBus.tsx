@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import './viewBus.css';
 import Navbar from "../Navbar/Navbar";
@@ -25,7 +25,7 @@ interface Bus {
   type: string;
 }
 
-interface seat {
+interface Seat {
   main: string;
   busId: number;
   id: number;
@@ -41,31 +41,25 @@ interface SeatSelected {
   seatType: string;
   offerPrice: number;
 }
-interface P {
-  main: string;
-  busId: number;
-  seatId: [];
-  seatCost: number;
-  seatType: string;
-  offerPrice: number;
-  totalAmount: number;
-}
+
 
 const GetBus = () => {
+  const navigate = useNavigate();
 
   const location = useLocation();
-  let totalAmount: number = 0;
-  let count: number = 1;
+
   const h = location.state.busData
-  console.log('startingPoint', h.startingPoint);
+  console.log('startingPoint', h);
   const sp = h.startingPoint
-  const [seats, setSeats] = useState<seat[]>([])
+  const [seats, setSeats] = useState<Seat[]>([])
   const [busData, setBusData] = useState<Bus[]>([])
   const [date, setDate] = useState<{ date: string }>({
     date: ''
   });
+  const [totalAmount, setTotalAmount] = useState<{ totalAmount: number }>({
+    totalAmount: 0
+  })
   const [bookSeat, setBookSeat] = useState<SeatSelected[]>([])
-
   const token = localStorage.getItem('user')
 
   useEffect(() => {
@@ -137,38 +131,35 @@ const GetBus = () => {
     const selectedSeat = seats.find((item) => item.id === seatId);
 
     if (selectedSeat) {
-      if (count % 2 === 1) {
 
-        if (!bookSeat.some((seat) => seat.id === selectedSeat.id)) {
-          if (bookSeat.some((seat) => seat.offerPrice === 0)) {
-            bookSeat.forEach((item) => {
-              if (item.offerPrice === 0) {
-                totalAmount += item.seatCost
-              } else {
-                totalAmount += item.offerPrice
-              }
-            })
-            console.log('total amount', totalAmount);
-          }
-          setBookSeat((prev) => [...prev, selectedSeat]);
-        }
-      } else {
-        if (bookSeat.some((item) => item.id === seatId)) {
+      if (!bookSeat.some((seat) => seat.id === selectedSeat.id)) {
+        setBookSeat(prev => {
+          return [...prev, selectedSeat];
+        })
+        console.log('ppo', bookSeat);
+        let t = 0
+        if (bookSeat.some((item) => item.offerPrice === 0)) {
           bookSeat.forEach((item) => {
-            if (item.offerPrice === 0) {
-              totalAmount -= item.seatCost
-            } else {
-              totalAmount -= item.offerPrice
-            }
-            return item.id !== seatId
+            t = item.seatCost
+          })
+        } else {
+          bookSeat.forEach((item) => {
+            t += item.offerPrice
+
           })
         }
+        setTotalAmount({ totalAmount: t })
+
       }
-      count++
+      console.log('too', totalAmount);
     }
 
   }
   console.log('bbbbbokked seat', bookSeat);
+
+  function booking() {
+    navigate('/booking', { state: { totalAmount, bookSeat } })
+  }
 
   return (
     <div >
@@ -223,11 +214,17 @@ const GetBus = () => {
                 })
               }
             </table>
-            {bookSeat.map((s) => {
-              return (
-                <p key={s.id}>{s.id}</p>
-              )
-            })}
+            <div className="markedSeat">
+              {bookSeat.map((s) => {
+                return (
+                  <p key={s.id}>{s.id}{","}</p>
+                )
+
+              })
+              }
+              <button onClick={booking}>Add Booking</button>
+            </div>
+
           </div>
         </div>
       </div>
