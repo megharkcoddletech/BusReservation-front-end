@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import './home.css';
-import { RiAccountCircleLine } from "react-icons/ri";
-import { TbHome2 } from "react-icons/tb";
 import { FiSearch } from "react-icons/fi";
 import { FaSquareInstagram } from "react-icons/fa6";
 import { CiFacebook } from "react-icons/ci";
 import { FaTwitter } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { AiOutlineLogout } from "react-icons/ai";
-
+import Navbar from "../Navbar/Navbar";
 type Bus = {
   startingPoint: string; destination: string; boardingTime: string; page: number
 }
@@ -16,15 +13,6 @@ type Bus = {
 const Home = () => {
 
   const navigate = useNavigate()
-
-  function viewUser() {
-    navigate('/viewProfile')
-  }
-
-  function logout() {
-    localStorage.setItem('user', '')
-    navigate('/')
-  }
 
   const [busData, setBusData] = useState<Bus>({
     startingPoint: "",
@@ -36,28 +24,16 @@ const Home = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBusData({ ...busData, [e.target.name]: e.target.value.trim() })
   }
-
+   
   const getBus = () => {
+    
     navigate('/viewBus', { state: { busData } })
   }
 
   return (
     <div className='Home'>
       <div className="mainClass">
-        <nav>
-          <div className="navHead">
-            <TbHome2 />
-          </div>
-          <div>
-            <div className="leftNav">
-              <button className="booking">Booking</button>
-              <div>
-              </div>
-              <RiAccountCircleLine className="userIcon" onClick={viewUser} />
-              <AiOutlineLogout className="userIcon" onClick={logout} />
-            </div>
-          </div>
-        </nav>
+        <Navbar></Navbar>
         <div className="banner">
           <div className="choose">
             <h2 className="grabBus">Grab Your Bus</h2>
