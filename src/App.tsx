@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Login from './Login/userLogin'
@@ -7,8 +6,12 @@ import Home from './Home/home'
 import SignUP from './SignUp/signUp';
 import GetBus from './ViewBus/viewBus';
 import Booking from './Booking/Booking';
+import { Provider } from "react-redux";
+import store from "./redux/store";
+
 function App() {
   return (
+    <Provider store={store}>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
@@ -18,6 +21,8 @@ function App() {
         <Route path='/booking' element = {<Booking/>}/>
       </Routes>
     </BrowserRouter>
+    </Provider>
+
   );
 }
 

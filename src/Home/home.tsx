@@ -10,6 +10,8 @@ type Bus = {
   startingPoint: string; destination: string; boardingTime: string; page: number
 }
 
+
+
 const Home = () => {
 
   const navigate = useNavigate()
@@ -20,6 +22,8 @@ const Home = () => {
     boardingTime: "",
     page: 1,
   })
+
+  // const
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBusData({ ...busData, [e.target.name]: e.target.value.trim() })

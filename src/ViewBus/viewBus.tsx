@@ -3,6 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import './viewBus.css';
 import Navbar from "../Navbar/Navbar";
+import { MdAirlineSeatReclineNormal } from "react-icons/md";
+import { useSelector, useDispatch } from "react-redux";
+import {RootState }  from '../redux/store';
+import {increment} from '../redux/totalAmount'
 
 interface Bus {
   main: string
@@ -42,25 +46,76 @@ interface SeatSelected {
   offerPrice: number;
 }
 
+interface Passenger {
+  passengerName: string;
+  passengerEmail: string;
+  passengerPhone: number;
+  passengerAge: number;
+}
+interface People {
+  id: number;
+  status: string;
+  passengerName: string;
+  passengerEmail: string;
+  passengerPhone: number;
+  passengerAge: number;
+}
+
+interface BookingDetails {
+  customerId: number;
+  busId:number;
+  date: string;
+  noOfSeats:number;
+  totalAmount: number;
+  status:string;
+  seatsId:People[];
+}
+ 
 
 const GetBus = () => {
+
+  const dispatch = useDispatch();
+  const totalAmount = useSelector((state: RootState) => state.totalAmount)
   const navigate = useNavigate();
 
   const location = useLocation();
 
   const h = location.state.busData
-  console.log('startingPoint', h);
   const sp = h.startingPoint
   const [seats, setSeats] = useState<Seat[]>([])
   const [busData, setBusData] = useState<Bus[]>([])
   const [date, setDate] = useState<{ date: string }>({
     date: ''
   });
-  const [totalAmount, setTotalAmount] = useState<{ totalAmount: number }>({
-    totalAmount: 0
-  })
+const [busId, setBusId] = useState<{busId:number}>({
+  busId:0
+})
+const [customerId, setCustomerID] = useState<number>(0)
+
   const [bookSeat, setBookSeat] = useState<SeatSelected[]>([])
+  const [passengers, setPassengers] = useState<Passenger>({
+    passengerName: '',
+    passengerEmail: '',
+    passengerPhone: 0,
+    passengerAge: 0,
+  })
+
+  const [pass, setPass] = useState<People[]>([])
+  const [isSeat, setIsSeat] = useState<boolean>(false)
+  const [bookingData, setBookingData] = useState<BookingDetails>({
+    customerId: 0,
+    busId:0,
+    date:'',
+    noOfSeats:0,
+    totalAmount: 0,
+    status:'',
+    seatsId:[],
+})
+
   const token = localStorage.getItem('user')
+  
+  const custId = localStorage.getItem('customerId') 
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -110,19 +165,22 @@ const GetBus = () => {
         const seat = res.data.data
         console.log('res.data', res.data.data);
         const currentBus = seat.filter((i: { busId: number; }) => i.busId === btnId);
-        console.log('cuurentBus', currentBus);
+        console.log('currentBus', currentBus);
+        if (currentBus.length > 0) {
+          setIsSeat(true)
+        }
         setSeats(currentBus)
+
       }).catch(e => {
         console.log(e);
       })
     } else {
       alert('enter date')
     }
-
   }
-
   function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
     setDate({ ...date, [e.target.name]: e.target.value })
+
   }
 
   function selectSeat(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -132,100 +190,165 @@ const GetBus = () => {
 
     if (selectedSeat) {
 
+     setBusId({busId: selectedSeat.busId})
+
       if (!bookSeat.some((seat) => seat.id === selectedSeat.id)) {
+        bookSeat.some((seat) => seat.id)
         setBookSeat(prev => {
           return [...prev, selectedSeat];
         })
-        console.log('ppo', bookSeat);
-        let t = 0
         if (bookSeat.some((item) => item.offerPrice === 0)) {
           bookSeat.forEach((item) => {
-            t = item.seatCost
+            dispatch(increment(selectedSeat.seatCost))
+
           })
         } else {
           bookSeat.forEach((item) => {
-            t += item.offerPrice
+            dispatch(increment(selectedSeat.offerPrice))
 
-          })
+            })
         }
-        setTotalAmount({ totalAmount: t })
-
       }
-      console.log('too', totalAmount);
     }
-
   }
-  console.log('bbbbbokked seat', bookSeat);
+  function passengerDetails(e: React.ChangeEvent<HTMLInputElement>): void {
+    const name = e.target.name
+    const value = e.target.value
+    setPassengers({ ...passengers, [name]: value })
+  }
+
+  function addPassenger(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    const seat = e.currentTarget.value
+    if (!pass.some((item) => item.id === parseInt(seat))) {
+      setPass((prev) => {
+        return [...prev, { id: parseInt(seat),status:'booked', passengerName: passengers.passengerName, passengerEmail: passengers.passengerEmail, passengerPhone: passengers.passengerPhone, passengerAge: passengers.passengerAge }];
+      });
+    }
+    const status:string = 'booked'
+    if(custId) {
+      const c = parseInt(custId)
+      setCustomerID(c)
+    }
+    setBookingData({customerId:customerId, busId:busId.busId,date:date.date,noOfSeats: noOfSeats, totalAmount:totalAmount, status:status , seatsId: pass})
+  }
+  const noOfSeats = bookSeat.length
+
+  async function api(url: string = "", bookingData = {}) {
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(bookingData),
+      
+    })
+    return result.json();
+  }
+
 
   function booking() {
-    navigate('/booking', { state: { totalAmount, bookSeat } })
+     console.log('setBookingData', bookingData);
+     console.log('kk', JSON.stringify(bookingData));
+
+    if(!bookingData){
+      alert('enter all details')
+    } else {
+      api(`${process.env.REACT_APP_apiURL}/userBooking/addBooking`, bookingData).then((data) => {
+        if (data.success === true) {
+
+          
+          alert('booking completed')
+          console.log('booked',);
+          
+          navigate('/booking')
+        } else {
+          alert(data.message)
+        }
+
+      })
+    }
   }
 
   return (
     <div >
       <Navbar></Navbar>
-      <div >
+      <div>
         <div className="viewBusMain">
-          <div className="viewbuses">
+          <div className="buses">
             {
               busData.map((item) => {
                 return (
                   <div className="bus" key={item.id}>
-                    <button>{item.name}</button>
+                    <h3 className="busName">{item.name}</h3>
                     <p>Starting Point: {item.starting_point}</p>
                     <p>Destination:{item.destination}</p>
-                    <input className="date" type="date" value={date.date} name="date" onChange={(e) => handleChange(e)} />
-                    <button className="getSeats" onClick={(e) => ViewSeats(e)} value={item.id}>Check Seats</button>
+                    <div className="dateSelect">
+                      <input className="date" type="date" value={date.date} name="date" onChange={(e) => handleChange(e)} />
+                      <button className="button" onClick={(e) => ViewSeats(e)} value={item.id}>Check Seats</button>
+                    </div>
                   </div>
                 )
               }
               )}
           </div>
-          <div className="viewSeats">
-            <table>
-              <thead>
-                <tr>
-                  <th>
-                    Seat number
-                  </th>
-                  <th>
-                    Seat Type
-                  </th>
-                  <th>
-                    Seat Cost
-                  </th>
-                  <th>
-                    OfferPrice
-                  </th>
-                </tr>
-              </thead>
-              {
-                seats.map((s) => {
-                  return (
-                    <tbody key={s.id}>
-                      <tr>
-                        <td><button onClick={(e) => selectSeat(e)} value={s.id}>{s.id}</button></td>
-                        <td>{s.seatType}</td>
-                        <td>{s.seatCost}</td>
-                        <td>{s.offerPrice}</td>
-                      </tr>
-                    </tbody>
-                  )
-                })
-              }
-            </table>
-            <div className="markedSeat">
-              {bookSeat.map((s) => {
-                return (
-                  <p key={s.id}>{s.id}{","}</p>
-                )
-
-              })
-              }
-              <button onClick={booking}>Add Booking</button>
-            </div>
-
-          </div>
+          {
+            isSeat ? (
+              <div className="viewSeats">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>
+                        Seat number
+                      </th>
+                      <th>
+                        Seat Type
+                      </th>
+                      <th>
+                        Seat Cost
+                      </th>
+                      <th>
+                        OfferPrice
+                      </th>
+                    </tr>
+                  </thead>
+                  {
+                    seats.map((s) => {
+                      return (
+                        <tbody key={s.id}>
+                          <tr>
+                            <td><button className="seatbtn" onClick={(e) => selectSeat(e)} value={s.id}> <MdAirlineSeatReclineNormal />{s.id}</button></td>
+                            <td>{s.seatType}</td>
+                            <td>{s.seatCost}</td>
+                            <td>{s.offerPrice}</td>
+                          </tr>
+                        </tbody>
+                      )
+                    })
+                  }
+                </table>
+                <div className="markedSeat">
+                  {bookSeat.map((s) => {
+                    return (
+                      <div key={s.id} className="passengerDetails">
+                        <fieldset key={s.id}>
+                          <p>Seat Number{s.id} </p>
+                          <input type="text" placeholder="passenger name" name="passengerName" onChange={(e) => passengerDetails(e)} /><br></br>
+                          <input type="email" placeholder="passenger email" name="passengerEmail" onChange={(e) => passengerDetails(e)} /><br></br>
+                          <input type="number" placeholder="passenger phone" name="passengerPhone" onChange={(e) => passengerDetails(e)} /><br></br>
+                          <input type="number" placeholder="passenger age" name="passengerAge" onChange={(e) => passengerDetails(e)} /><br></br>
+                          <button value={s.id} onClick={(e) => addPassenger(e)}>Add</button>
+                        </fieldset>
+                      </div>
+                    )
+                  })
+                  }
+                  <p>Total: <span>{totalAmount}</span></p>
+                  <button onClick={booking}>Add Booking</button>
+                </div>
+              </div>
+            ) : (<></>)
+          }
         </div>
       </div>
     </div>
