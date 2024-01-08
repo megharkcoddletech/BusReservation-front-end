@@ -33,7 +33,13 @@ const Login = () => {
     e.preventDefault();
     callApi(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {
       if (data.success === true) {
-        localStorage.setItem('user', data.data)
+        const response = data.data
+        localStorage.setItem('user', response.token)
+        const user = response.checkLoginQuery
+        user.forEach((item: { id: any; }) => {
+         const customerId =  item.id
+         localStorage.setItem('customerId', customerId)         
+        });  
         navigate('/home')
       }
       else {
