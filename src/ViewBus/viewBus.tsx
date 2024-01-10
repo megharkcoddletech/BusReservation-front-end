@@ -226,6 +226,7 @@ const [customerId, setCustomerID] = useState<number>(0)
     }
     const status:string = 'booked'
     if(custId) {
+      
       const c = parseInt(custId)
       setCustomerID(c)
     }
@@ -238,10 +239,10 @@ const [customerId, setCustomerID] = useState<number>(0)
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(bookingData),
-      
     })
     return result.json();
   }
@@ -256,13 +257,9 @@ const [customerId, setCustomerID] = useState<number>(0)
     } else {
       api(`${process.env.REACT_APP_apiURL}/userBooking/addBooking`, bookingData).then((data) => {
         if (data.success === true) {
-
-          
           alert('booking completed')
-          console.log('booked',);
-          
           navigate('/booking')
-        } else {
+        } else {          
           alert(data.message)
         }
 
@@ -295,8 +292,8 @@ const [customerId, setCustomerID] = useState<number>(0)
           {
             isSeat ? (
               <div className="viewSeats">
-                <table>
-                  <thead>
+                <table className="seatTable">
+                  <thead className="tableHead">
                     <tr>
                       <th>
                         Seat number
@@ -315,9 +312,9 @@ const [customerId, setCustomerID] = useState<number>(0)
                   {
                     seats.map((s) => {
                       return (
-                        <tbody key={s.id}>
+                        <tbody key={s.id} className="tableBody">
                           <tr>
-                            <td><button className="seatbtn" onClick={(e) => selectSeat(e)} value={s.id}> <MdAirlineSeatReclineNormal />{s.id}</button></td>
+                            <td><button className="seatbtn" onClick={(e) => selectSeat(e)} value={s.id}> <MdAirlineSeatReclineNormal className="seatIcon"/>{s.id}</button></td>
                             <td>{s.seatType}</td>
                             <td>{s.seatCost}</td>
                             <td>{s.offerPrice}</td>

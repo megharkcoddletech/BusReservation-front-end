@@ -23,7 +23,6 @@ const Home = () => {
     page: 1,
   })
 
-  // const
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBusData({ ...busData, [e.target.name]: e.target.value.trim() })

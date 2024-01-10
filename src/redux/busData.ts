@@ -27,6 +27,7 @@ interface Bus {
   const initialState: BusDataState = {
     busData: [],
   };
+
 const busDataSlice = createSlice({
     name: 'busData',
     initialState,
@@ -34,7 +35,6 @@ const busDataSlice = createSlice({
         getBusData: (state, action:PayloadAction<Bus[]>) =>{
           state.busData = action.payload
         },
-
 }
 })
 export const {getBusData} = busDataSlice.actions;

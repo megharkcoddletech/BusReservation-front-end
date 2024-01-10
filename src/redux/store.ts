@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import totalAmountSlice from './totalAmount'
+import UserCred from "./UserCred";
 const store = configureStore({
     reducer:{
         totalAmount: totalAmountSlice,
+        UserCred: UserCred
     }
 })
 

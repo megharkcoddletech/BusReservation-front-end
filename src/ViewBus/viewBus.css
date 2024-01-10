@@ -50,3 +50,17 @@ head {
   padding:5px;
   border: 0;
 }
+.tableBody tr{
+  box-shadow :1px 1px 1px 1px;
+}
+.seatTable{
+  width: 400px;
+  text-align: center;
+  background-color: rgb(222, 208, 189);
+  border-spacing: 30px;
+  border-radius: 5px;
+}
+
+.seatIcon {
+  font-size: 25px;
+}
