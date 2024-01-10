@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './userLogin.css';
+import { RootState } from "../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import {  userToken, userDetails } from "../redux/UserCred";
 
 type Auth = { username: string; password: string }
 
 const Login = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const userL = useSelector((state: RootState) => state.UserCred)
   const [credentials, setCredentials] = useState<Auth>(
     {
       username: "",
@@ -33,7 +37,24 @@ const Login = () => {
     e.preventDefault();
     callApi(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {
       if (data.success === true) {
-        localStorage.setItem('user', data.data)
+        console.log( 'login', data);
+        const response = data.data
+        console.log('respons data', response.token);
+        
+        dispatch(userDetails(response.checkLoginQuery))
+        console.log('ooooss', userL.user);
+        
+        dispatch(userToken(response.token))
+        localStorage.setItem('user', response.token)
+        console.log('tt', localStorage.getItem('tt'));
+
+
+        const user = response.checkLoginQuery
+
+        user.forEach((item: { id: any; }) => {
+         const customerId =  item.id
+         localStorage.setItem('customerId', customerId)         
+        });  
         navigate('/home')
       }
       else {
