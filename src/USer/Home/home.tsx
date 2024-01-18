@@ -1,14 +1,9 @@
 import React, { useState } from "react";
 import './home.css';
-import { RiAccountCircleLine } from "react-icons/ri";
-import { TbHome2 } from "react-icons/tb";
 import { FiSearch } from "react-icons/fi";
-import { FaSquareInstagram } from "react-icons/fa6";
-import { CiFacebook } from "react-icons/ci";
-import { FaTwitter } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { AiOutlineLogout } from "react-icons/ai";
-
+import Navbar from "../Navbar/Navbar";
+import Footer from "../../Footer/Footer";
 type Bus = {
   startingPoint: string; destination: string; boardingTime: string; page: number
 }
@@ -17,21 +12,13 @@ const Home = () => {
 
   const navigate = useNavigate()
 
-  function viewUser() {
-    navigate('/viewProfile')
-  }
-
-  function logout() {
-    localStorage.setItem('user', '')
-    navigate('/')
-  }
-
   const [busData, setBusData] = useState<Bus>({
     startingPoint: "",
     destination: "",
     boardingTime: "",
     page: 1,
   })
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBusData({ ...busData, [e.target.name]: e.target.value.trim() })
@@ -44,20 +31,7 @@ const Home = () => {
   return (
     <div className='Home'>
       <div className="mainClass">
-        <nav>
-          <div className="navHead">
-            <TbHome2 />
-          </div>
-          <div>
-            <div className="leftNav">
-              <button className="booking">Booking</button>
-              <div>
-              </div>
-              <RiAccountCircleLine className="userIcon" onClick={viewUser} />
-              <AiOutlineLogout className="userIcon" onClick={logout} />
-            </div>
-          </div>
-        </nav>
+        <Navbar></Navbar>
         <div className="banner">
           <div className="choose">
             <h2 className="grabBus">Grab Your Bus</h2>
@@ -96,37 +70,8 @@ const Home = () => {
           </p>
         </div>
       </div>
-      <footer>
-        <div className="footerMain">
-          <div className="appDescription">
-            <div className="appAboutHead">
-              <h4>About</h4>
-              <p className="appAbout">the world's largest online bus ticket booking service trusted by over 25 million happy customers globally</p>
-            </div>
-            <div className="appInfo">
-              <h4>Info</h4>
-              <div className="appInfoLink">
-                <a href="/contact">Contact</a>
-                <a href="t&c">T&C</a>
-                <a href="privacy">Privacy & Policy</a>
-              </div>
-            </div>
-            <div className="appInfo">
-              <h4>Global Sites</h4>
-              <div className="appInfoLink">
-                <a href="/indiA">India</a>
-                <a href="/">UAE</a>
-                <a href="privacy">USA</a>
-              </div>
-            </div>
-          </div>
-          <div className="socialAccounts">
-            <FaSquareInstagram className="SocialChild" />
-            <CiFacebook className="SocialChild" />
-            <FaTwitter className="SocialChild" />
-          </div>
-        </div>
-      </footer>
+      <Footer></Footer>
+
     </div>
   );
 };
