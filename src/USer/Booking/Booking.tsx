@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar/Navbar";
 import axios from 'axios';
 import { CiSearch } from "react-icons/ci";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import WithStyle  from "../../HOC/WithStyle";
 
 interface Booking {
     bookingId: number;
@@ -33,7 +34,7 @@ interface Ticket {
     modified: string;
 }
 
-const Booking = () => {
+const Booking:React.FunctionComponent = (style) => {
     const navigate = useNavigate()
     const token = localStorage.getItem('user')
     const [bookingDetails, setBookingDetails] = useState<Booking[]>([])
@@ -42,13 +43,10 @@ const Booking = () => {
     const [date, setDate] = useState<{ date: string }>({
         date: ''
     })
-
+    const [currentDate, setCurrentDate] = useState<boolean>(false)
     function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
         setDate({ ...date, [e.target.name]: e.target.value })
     }
-    console.log('booking view, token', token);
-
-    console.log('date booking filter', date.date);
 
     useEffect(() => {
         const fetch = async () => {
@@ -62,19 +60,15 @@ const Booking = () => {
             )
             if (data.success === true) {
                 setBookingDetails(data.data)
-                console.log('dst', data);
-                console.log(data.message);
-                const bookkings = data.data.data
-                console.log('gbookings', bookkings);
-                console.log(Array.isArray(bookkings));
                 setNoBooking(false)
+                setCurrentDate(false)
             } else {
                 setNoBooking(true)
-                console.log('ff', data);
+                setCurrentDate(true)
             }
         }
         fetch();
-    }, [])
+    }, [token])
 
 
     function bookingFilter() {
@@ -89,24 +83,18 @@ const Booking = () => {
             }).then(res => {
                 if (res.data.success === true) {
                     setNoBooking(false)
-                    console.log('data on date', res.data.data);
                     setBookingDetails(res.data.data)
                 } else {
                     setNoBooking(true)
-                    console.log('daata false on date', res.data);
                 }
 
-                console.log('setBookingDetails', bookingDetails);
             }).catch(e => {
                 console.log(e);
             })
         }
     }
-
     function viewTicket(e: any) {
         const bookId = e.target.value
-        console.log('target booking id', bookId);
-        console.log('book indise details', bookingDetails);
         axios(`${process.env.REACT_APP_apiURL}/userBooking/singleTicket?bookingId=${encodeURIComponent(bookId)}`, {
             method: 'GET',
             headers: {
@@ -116,27 +104,18 @@ const Booking = () => {
             }
         }).then(res => {
             if (res.data.success === true) {
-                console.log('ticket', res.data.data);
                 setTicket(res.data.data)
-                console.log('settiket', ticket);
-
             } else {
                 alert('no tickets ')
-                console.log('ticket dtta', res.data);
             }
-
         }).catch(e => {
             console.log(e);
         })
-
     }
 
-    function vticket() {
+    if (ticket.length > 0) {
         navigate('/ticket', { state: { ticket } })
-
     }
-    console.log('too', ticket);
-
     return (
         <div>
             <Navbar></Navbar>
@@ -152,11 +131,18 @@ const Booking = () => {
                             noBooking ?
                                 (
                                     <div>
-                                        <p>no booking on {date.date}</p>
+                                        <p>no booking
+                                            {
+                                                currentDate ?
+                                                    (
+                                                        'today'
+                                                    ) : (<></>)
+                                            }
+                                        </p>
                                     </div>
                                 ) : (
                                     <div>
-                                        <table>
+                                        <table style={style}>
                                             <thead>
                                                 <tr>
                                                     <th>
@@ -202,8 +188,7 @@ const Booking = () => {
                                                                 <td>{item.noOfSeats}</td>
                                                                 <td>{item.totalAmount}</td>
                                                                 <td>{item.status}</td>
-                                                                <td><button value={item.bookingId} onClick={(e) => viewTicket(e)}>Get Ticket</button></td>
-                                                                <td><button onClick={vticket}>view ticket</button></td>
+                                                                <td><button value={item.bookingId} onClick={(e) => viewTicket(e)}>view Tickets</button></td>
                                                             </tr>
                                                         )
 
@@ -211,10 +196,8 @@ const Booking = () => {
                                                 }
                                             </tbody>
                                         </table>
-
                                     </div>
                                 )
-
                         }
                     </div>
                 </div>
@@ -223,4 +206,4 @@ const Booking = () => {
     )
 }
 
-export default Booking
+export default WithStyle(Booking)

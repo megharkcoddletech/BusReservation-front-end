@@ -1,18 +1,28 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import Navbar from "../Navbar/Navbar";
+import WithStyle from "../../HOC/WithStyle";
+const Ticket:React.FunctionComponent = (style) => {
 
-const Ticket = () => {
     const location = useLocation();
-
-    console.log('ddd', location.state.ticket);
     const ticket = location.state.ticket
 
-    console.log('ti', ticket);
+    function cancelBooking() {
+        const option = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        }
 
+        fetch(`${process.env.REACT_APP_apiURL}/userBooking/cancelBooking`, option)
+            .then(res => res.json())
+            .then(data => data)
+    }
 
     return (
         <div>
-            <table>
+            <Navbar></Navbar>
+            <table style={style}>
                 <thead>
                     <tr>
                         <th>
@@ -56,10 +66,10 @@ const Ticket = () => {
                                     <td>
                                         {s.passenger_email}
                                     </td>
-                                    <td>{s.passenger_Phone}</td>
+                                    <td>{s.passenger_phone}</td>
                                     <td>{s.passenger_age}</td>
                                     <td>{s.status}</td>
-                                    <button>cancel</button>
+                                    <button onClick={cancelBooking}>cancel</button>
                                 </tr>
                             )
                         })
@@ -70,4 +80,4 @@ const Ticket = () => {
     )
 }
 
-export default Ticket;
+export default WithStyle(Ticket);

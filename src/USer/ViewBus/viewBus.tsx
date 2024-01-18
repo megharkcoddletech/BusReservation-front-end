@@ -5,8 +5,10 @@ import './viewBus.css';
 import Navbar from "../Navbar/Navbar";
 import { MdAirlineSeatReclineNormal } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
-import {RootState }  from '../redux/store';
-import {increment} from '../redux/totalAmount'
+import { RootState } from '../../redux/store';
+import { increment, decrement } from '../../redux/totalAmount';
+import { TbBusStop } from "react-icons/tb";
+
 
 interface Bus {
   main: string
@@ -63,14 +65,14 @@ interface People {
 
 interface BookingDetails {
   customerId: number;
-  busId:number;
+  busId: number;
   date: string;
-  noOfSeats:number;
+  noOfSeats: number;
   totalAmount: number;
-  status:string;
-  seatsId:People[];
+  status: string;
+  seatsId: People[];
 }
- 
+
 
 const GetBus = () => {
 
@@ -87,10 +89,9 @@ const GetBus = () => {
   const [date, setDate] = useState<{ date: string }>({
     date: ''
   });
-const [busId, setBusId] = useState<{busId:number}>({
-  busId:0
-})
-const [customerId, setCustomerID] = useState<number>(0)
+
+  const [busId, setBusId] = useState<number>(0)
+  const [customerId, setCustomerId] = useState<number>(0)
 
   const [bookSeat, setBookSeat] = useState<SeatSelected[]>([])
   const [passengers, setPassengers] = useState<Passenger>({
@@ -104,17 +105,17 @@ const [customerId, setCustomerID] = useState<number>(0)
   const [isSeat, setIsSeat] = useState<boolean>(false)
   const [bookingData, setBookingData] = useState<BookingDetails>({
     customerId: 0,
-    busId:0,
-    date:'',
-    noOfSeats:0,
+    busId: 0,
+    date: '',
+    noOfSeats: 0,
     totalAmount: 0,
-    status:'',
-    seatsId:[],
-})
+    status: '',
+    seatsId: [],
+  })
 
   const token = localStorage.getItem('user')
-  
-  const custId = localStorage.getItem('customerId') 
+
+  const custId = localStorage.getItem('customerId')
 
 
   useEffect(() => {
@@ -138,12 +139,8 @@ const [customerId, setCustomerID] = useState<number>(0)
         },
       }
       )
-      console.log('dst', data);
-      console.log(data.data);
       const buses = data.data.data
       setBusData(buses);
-      console.log('g', buses);
-      console.log(Array.isArray(buses));
     }
     fetch();
   }, [h.boardingTime, h.destination, h.page, h.startingPoint, sp, token])
@@ -151,7 +148,6 @@ const [customerId, setCustomerID] = useState<number>(0)
   const ViewSeats = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 
     e.preventDefault();
-    console.log('target', e.currentTarget.value);
     const btnId = parseInt(e.currentTarget.value)
     if (date.date) {
       axios(`${process.env.REACT_APP_apiURL}/userBus/viewSeats?date=${date.date}`, {
@@ -163,9 +159,7 @@ const [customerId, setCustomerID] = useState<number>(0)
         }
       }).then(res => {
         const seat = res.data.data
-        console.log('res.data', res.data.data);
         const currentBus = seat.filter((i: { busId: number; }) => i.busId === btnId);
-        console.log('currentBus', currentBus);
         if (currentBus.length > 0) {
           setIsSeat(true)
         }
@@ -190,27 +184,32 @@ const [customerId, setCustomerID] = useState<number>(0)
 
     if (selectedSeat) {
 
-     setBusId({busId: selectedSeat.busId})
-
+      setBusId(selectedSeat.busId)
       if (!bookSeat.some((seat) => seat.id === selectedSeat.id)) {
-        bookSeat.some((seat) => seat.id)
         setBookSeat(prev => {
           return [...prev, selectedSeat];
         })
-        if (bookSeat.some((item) => item.offerPrice === 0)) {
-          bookSeat.forEach((item) => {
-            dispatch(increment(selectedSeat.seatCost))
-
-          })
+        console.log('booooked seet inside', bookSeat);
+        console.log('selected seettt', selectedSeat);
+        if (selectedSeat.offerPrice === 0) {
+          dispatch(increment(selectedSeat.seatCost))
         } else {
-          bookSeat.forEach((item) => {
-            dispatch(increment(selectedSeat.offerPrice))
+          dispatch(increment(selectedSeat.offerPrice))
 
-            })
+        }
+      } else {
+        setBookSeat((bookSeat) => bookSeat.filter((item) => item.id !== selectedSeat.id))
+        if (selectedSeat.offerPrice === 0) {
+          dispatch(decrement(selectedSeat.seatCost))
+        } else {
+          dispatch(decrement(selectedSeat.offerPrice))
         }
       }
     }
   }
+
+  console.log('book seat after ', bookSeat);
+
   function passengerDetails(e: React.ChangeEvent<HTMLInputElement>): void {
     const name = e.target.name
     const value = e.target.value
@@ -221,16 +220,15 @@ const [customerId, setCustomerID] = useState<number>(0)
     const seat = e.currentTarget.value
     if (!pass.some((item) => item.id === parseInt(seat))) {
       setPass((prev) => {
-        return [...prev, { id: parseInt(seat),status:'booked', passengerName: passengers.passengerName, passengerEmail: passengers.passengerEmail, passengerPhone: passengers.passengerPhone, passengerAge: passengers.passengerAge }];
+        return [...prev, { id: parseInt(seat), status: 'booked', passengerName: passengers.passengerName, passengerEmail: passengers.passengerEmail, passengerPhone: passengers.passengerPhone, passengerAge: passengers.passengerAge }];
       });
     }
-    const status:string = 'booked'
-    if(custId) {
-      
+    const status: string = 'booked'
+    if (custId) {
       const c = parseInt(custId)
-      setCustomerID(c)
+      setCustomerId(c)
     }
-    setBookingData({customerId:customerId, busId:busId.busId,date:date.date,noOfSeats: noOfSeats, totalAmount:totalAmount, status:status , seatsId: pass})
+    setBookingData({ customerId: customerId, busId: busId, date: date.date, noOfSeats: noOfSeats, totalAmount: totalAmount, status: status, seatsId: pass })
   }
   const noOfSeats = bookSeat.length
 
@@ -249,17 +247,14 @@ const [customerId, setCustomerID] = useState<number>(0)
 
 
   function booking() {
-     console.log('setBookingData', bookingData);
-     console.log('kk', JSON.stringify(bookingData));
-
-    if(!bookingData){
+    if (!bookingData) {
       alert('enter all details')
     } else {
       api(`${process.env.REACT_APP_apiURL}/userBooking/addBooking`, bookingData).then((data) => {
         if (data.success === true) {
           alert('booking completed')
           navigate('/booking')
-        } else {          
+        } else {
           alert(data.message)
         }
 
@@ -277,7 +272,7 @@ const [customerId, setCustomerID] = useState<number>(0)
               busData.map((item) => {
                 return (
                   <div className="bus" key={item.id}>
-                    <h3 className="busName">{item.name}</h3>
+                    <h3 className="busName"><TbBusStop />{item.name}</h3>
                     <p>Starting Point: {item.starting_point}</p>
                     <p>Destination:{item.destination}</p>
                     <div className="dateSelect">
@@ -314,7 +309,11 @@ const [customerId, setCustomerID] = useState<number>(0)
                       return (
                         <tbody key={s.id} className="tableBody">
                           <tr>
-                            <td><button className="seatbtn" onClick={(e) => selectSeat(e)} value={s.id}> <MdAirlineSeatReclineNormal className="seatIcon"/>{s.id}</button></td>
+                            <td>
+                              <button className="seatbtn" onClick={(e) => selectSeat(e)} value={s.id}>
+                                <MdAirlineSeatReclineNormal className="seatIcon" />
+                                {s.id}</button>
+                            </td>
                             <td>{s.seatType}</td>
                             <td>{s.seatCost}</td>
                             <td>{s.offerPrice}</td>
@@ -328,7 +327,7 @@ const [customerId, setCustomerID] = useState<number>(0)
                   {bookSeat.map((s) => {
                     return (
                       <div key={s.id} className="passengerDetails">
-                        <fieldset key={s.id}>
+                        <fieldset className="field" key={s.id}>
                           <p>Seat Number{s.id} </p>
                           <input type="text" placeholder="passenger name" name="passengerName" onChange={(e) => passengerDetails(e)} /><br></br>
                           <input type="email" placeholder="passenger email" name="passengerEmail" onChange={(e) => passengerDetails(e)} /><br></br>
@@ -341,7 +340,7 @@ const [customerId, setCustomerID] = useState<number>(0)
                   })
                   }
                   <p>Total: <span>{totalAmount}</span></p>
-                  <button onClick={booking}>Add Booking</button>
+                  <button className="bookbtn" onClick={booking}>Add Booking</button>
                 </div>
               </div>
             ) : (<></>)

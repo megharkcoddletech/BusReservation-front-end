@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import './home.css';
 import { FiSearch } from "react-icons/fi";
-import { FaSquareInstagram } from "react-icons/fa6";
-import { CiFacebook } from "react-icons/ci";
-import { FaTwitter } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
+import Footer from "../../Footer/Footer";
 type Bus = {
   startingPoint: string; destination: string; boardingTime: string; page: number
 }
-
-
 
 const Home = () => {
 
@@ -27,9 +23,8 @@ const Home = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBusData({ ...busData, [e.target.name]: e.target.value.trim() })
   }
-   
+
   const getBus = () => {
-    
     navigate('/viewBus', { state: { busData } })
   }
 
@@ -75,37 +70,8 @@ const Home = () => {
           </p>
         </div>
       </div>
-      <footer>
-        <div className="footerMain">
-          <div className="appDescription">
-            <div className="appAboutHead">
-              <h4>About</h4>
-              <p className="appAbout">the world's largest online bus ticket booking service trusted by over 25 million happy customers globally</p>
-            </div>
-            <div className="appInfo">
-              <h4>Info</h4>
-              <div className="appInfoLink">
-                <a href="/contact">Contact</a>
-                <a href="t&c">T&C</a>
-                <a href="privacy">Privacy & Policy</a>
-              </div>
-            </div>
-            <div className="appInfo">
-              <h4>Global Sites</h4>
-              <div className="appInfoLink">
-                <a href="/indiA">India</a>
-                <a href="/">UAE</a>
-                <a href="privacy">USA</a>
-              </div>
-            </div>
-          </div>
-          <div className="socialAccounts">
-            <FaSquareInstagram className="SocialChild" />
-            <CiFacebook className="SocialChild" />
-            <FaTwitter className="SocialChild" />
-          </div>
-        </div>
-      </footer>
+      <Footer></Footer>
+
     </div>
   );
 };
