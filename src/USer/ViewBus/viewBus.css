@@ -1,0 +1,200 @@
+head {
+  font-size: 20px;
+}
+
+.navDiv {
+  background-color: black;
+}
+
+.sideBar {
+  width: 230px;
+  background-color: #858565;
+  padding: 30px;
+  flex: 1;
+}
+
+.bus {
+  border: 2px solid black;
+  margin: 20px;
+  padding: 15px;
+  border-radius: 20px;
+  border-color: rgb(197, 174, 174);
+  box-shadow: 0px 1px 2px 3px;
+}
+
+.viewBusMain {
+  display: flex;
+  direction: column;
+  border-color: rgb(197, 174, 174);
+}
+
+.buspart {
+  margin-top: 50px;
+  display: flex;
+  align-items: flex-start;
+  flex: 5;
+}
+
+.buses {
+  width: 100%;
+}
+
+.busName {
+  text-align: center;
+  color: #636321;
+  font-size: 20px;
+}
+
+.dateSelect {
+  display: flex;
+  flex-direction: column;
+  align-content: space-around;
+  padding: 20px 30px;
+}
+
+.date {
+  width: 150px;
+  padding: 10px;
+  box-shadow: 0px 1px 2px 0px;
+  margin: 20px;
+  background-color: rgba(110, 9, 9, 0.703);
+  border-radius: 10px;
+  color: aliceblue;
+}
+
+.checkButton {
+  margin: 20px;
+  padding: 10px 15px;
+  border-radius: 20px;
+  background-color: rgb(199, 132, 43);
+  box-shadow: 0px 2px 1px 0px;
+  width: 109px;
+}
+
+.viewSeats {
+  margin: 30px;
+  background-color: rgb(222, 208, 189);
+}
+
+.seatbtn {
+  background: transparent;
+  padding: 5px;
+  border: 0;
+}
+
+.tableBody tr {
+  box-shadow: 1px 1px 1px 1px;
+}
+
+.seatTable {
+  width: 400px;
+  text-align: center;
+  border-spacing: 30px;
+  border-radius: 5px;
+}
+
+.seatIcon {
+  font-size: 25px;
+}
+
+.markedSeat {
+  width: 400px;
+  text-align: center;
+  background-color: rgb(222, 208, 189);
+  border-spacing: 30px;
+  border: 0;
+}
+
+.field {
+  border: 0px
+}
+
+.bookbtn {
+  padding: 10px 15px;
+  border-radius: 20px;
+  background-color: rgb(237, 217, 235);
+}
+
+.selectedSeat {
+  background-color: green;
+}
+
+.seatSelected {
+  display: flex;
+  flex-direction: column;
+}
+
+.addtocart {
+  padding: 50px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.timeFilter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+}
+
+
+.checkboxDiv {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 10px;
+  background-size: cover;
+  padding: 3px;
+  font-size: 20px;
+
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+.innerCheckbox {
+  display: "flex";
+  display: flex;
+  align-items: "center";
+}
+
+#one:checked~.checkboxDiv {
+  color: yellow;
+  background-color: black;
+
+}
+
+.checkboxDiv:hover {
+  box-shadow: 0px 0px 2px 2px;
+}
+
+.ck:checked {
+  background-color: red;
+  display: block;
+}
+
+.checkBox {
+  width: 20px;
+  height: 20px;
+  margin: 10px;
+}
+
+.filterLabel {
+  font-size: 17px;
+  margin: 15px;
+  color: rgb(75, 30, 30);
+}
+
+.seatCart {
+  display: flex;
+}
+
+.removebtn {
+  border: none;
+  background: transparent;
+  background-color: #a6a692;
+  padding: 0px 5px;
+  margin: 13px 10px;
+}
