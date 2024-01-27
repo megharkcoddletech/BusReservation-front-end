@@ -9,12 +9,14 @@ interface User {
 
 interface LoginDetails {
     user: User[],
-    token: string
+    token: string,
+    isLogin: boolean,
 }
 
 const initialState: LoginDetails = {
     user: [],
-    token: ''
+    token: '',
+    isLogin: false
 }
 
 const UserCred = createSlice({
@@ -28,12 +30,15 @@ const UserCred = createSlice({
 
         userToken: (state, action: PayloadAction<string>) => {
             state.token = action.payload
+        }, 
+        validUser: (state, action: PayloadAction<boolean>) =>{
+            state.isLogin = action.payload
         }
     }
     ,
 })
 
-export const { userDetails, userToken } = UserCred.actions;
+export const { userDetails, userToken, validUser } = UserCred.actions;
 export default UserCred.reducer
 
 

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import './viewBus.css';
 import Navbar from "../Navbar/Navbar";
 import { MdAirlineSeatReclineNormal } from "react-icons/md";
@@ -8,6 +7,20 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from '../../redux/store';
 import { increment, decrement } from '../../redux/totalAmount';
 import { TbBusStop } from "react-icons/tb";
+import GetApiCall from "../../GetApi/GetApiCall";
+import PostApiCall from "../../GetApi/PostApiCall";
+import Footer from "../../Footer/Footer";
+import { WiSunrise } from "react-icons/wi";
+import { IoCloudyNightOutline } from "react-icons/io5";
+import { TbSunset2 } from "react-icons/tb";
+import { IoCloudyNightSharp } from "react-icons/io5";
+import { GiCctvCamera } from "react-icons/gi";
+import { IoTicket } from "react-icons/io5";
+import { BiBlanket } from "react-icons/bi";
+import { PiPlugChargingFill } from "react-icons/pi";
+import { IoMdCall } from "react-icons/io";
+
+
 
 
 interface Bus {
@@ -50,16 +63,15 @@ interface SeatSelected {
 
 interface Passenger {
   passengerName: string;
-  passengerEmail: string;
-  passengerPhone: number;
+  gender: string;
   passengerAge: number;
+
 }
 interface People {
   id: number;
   status: string;
   passengerName: string;
-  passengerEmail: string;
-  passengerPhone: number;
+  gender: string;
   passengerAge: number;
 }
 
@@ -78,12 +90,12 @@ const GetBus = () => {
 
   const dispatch = useDispatch();
   const totalAmount = useSelector((state: RootState) => state.totalAmount)
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
   const h = location.state.busData
-  const sp = h.startingPoint
   const [seats, setSeats] = useState<Seat[]>([])
   const [busData, setBusData] = useState<Bus[]>([])
   const [date, setDate] = useState<{ date: string }>({
@@ -91,80 +103,51 @@ const GetBus = () => {
   });
 
   const [busId, setBusId] = useState<number>(0)
-  const [customerId, setCustomerId] = useState<number>(0)
 
   const [bookSeat, setBookSeat] = useState<SeatSelected[]>([])
   const [passengers, setPassengers] = useState<Passenger>({
     passengerName: '',
-    passengerEmail: '',
-    passengerPhone: 0,
+    gender: '',
     passengerAge: 0,
   })
-
-  const [pass, setPass] = useState<People[]>([])
+  const [seatDetails, setSeatDetails] = useState<number[]>([])
   const [isSeat, setIsSeat] = useState<boolean>(false)
-  const [bookingData, setBookingData] = useState<BookingDetails>({
-    customerId: 0,
-    busId: 0,
-    date: '',
-    noOfSeats: 0,
-    totalAmount: 0,
-    status: '',
-    seatsId: [],
-  })
+  const [loading, setLoading] = useState<boolean>(true)
+  const [seatMessage, setSeatMessage] = useState<boolean>(false)
 
-  const token = localStorage.getItem('user')
-
-  const custId = localStorage.getItem('customerId')
-
-
-  useEffect(() => {
-    const fetch = async () => {
-      console.log('inside', sp);
-      let url;
-      if (!h.startingPoint && !h.destination && !h.boardingTime) {
-        url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses`
-      } else if (!h.destination && !h.boardingTime) {
-        url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses?startingPoint=${encodeURIComponent(h.startingPoint)}`
-      } else if (!h.boardingTime) {
-        url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses?startingPoint=${encodeURIComponent(h.startingPoint)}&destination=${encodeURIComponent(h.destination)}`
-      } else {
-        url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses?startingPoint=${encodeURIComponent(h.startingPoint)}&destination=${encodeURIComponent(h.destination)}&boardingTime=${encodeURIComponent(h.boardingTime)}&page=${encodeURIComponent(h.page)}`
-      }
-      const { data } = await axios.get(url, {
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-      }
-      )
-      const buses = data.data.data
-      setBusData(buses);
-    }
-    fetch();
-  }, [h.boardingTime, h.destination, h.page, h.startingPoint, sp, token])
+  let url
+  if (!h.startingPoint && !h.destination && !h.boardingTime) {
+    url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses`
+  } else if (!h.destination && !h.boardingTime) {
+    url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses?startingPoint=${encodeURIComponent(h.startingPoint)}`
+  } else if (!h.boardingTime) {
+    url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses?startingPoint=${encodeURIComponent(h.startingPoint)}&destination=${encodeURIComponent(h.destination)}`
+  } else {
+    url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses?startingPoint=${encodeURIComponent(h.startingPoint)}&destination=${encodeURIComponent(h.destination)}&boardingTime=${encodeURIComponent(h.boardingTime)}&page=${encodeURIComponent(h.page)}`
+  }
+  if (loading) {
+    const buses = GetApiCall(url)
+    buses.then(res => {
+      setBusData(res.data);
+      setLoading(false)
+    }).catch(err => {
+      console.log(err);
+    })
+  }
 
   const ViewSeats = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 
     e.preventDefault();
     const btnId = parseInt(e.currentTarget.value)
     if (date.date) {
-      axios(`${process.env.REACT_APP_apiURL}/userBus/viewSeats?date=${date.date}`, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'multipart/form-data',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      }).then(res => {
-        const seat = res.data.data
-        const currentBus = seat.filter((i: { busId: number; }) => i.busId === btnId);
+      const checkSeat = GetApiCall(`${process.env.REACT_APP_apiURL}/userBus/viewSeats?date=${date.date}`)
+      checkSeat.then(res => {
+        const currentBus = res.filter((i: { busId: number; }) => i.busId === btnId);
         if (currentBus.length > 0) {
           setIsSeat(true)
         }
         setSeats(currentBus)
-
+        console.log('view seats', res);
       }).catch(e => {
         console.log(e);
       })
@@ -174,7 +157,6 @@ const GetBus = () => {
   }
   function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
     setDate({ ...date, [e.target.name]: e.target.value })
-
   }
 
   function selectSeat(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -189,16 +171,23 @@ const GetBus = () => {
         setBookSeat(prev => {
           return [...prev, selectedSeat];
         })
-        console.log('booooked seet inside', bookSeat);
+        setSeatDetails(prev => {
+          return [...prev, selectedSeat.id]
+        })
+        setSeatMessage(true)
         console.log('selected seettt', selectedSeat);
         if (selectedSeat.offerPrice === 0) {
           dispatch(increment(selectedSeat.seatCost))
+          console.log('seat cost  add', selectedSeat.seatCost);
+
         } else {
           dispatch(increment(selectedSeat.offerPrice))
+          console.log('seat cost  add', selectedSeat.offerPrice);
 
         }
       } else {
         setBookSeat((bookSeat) => bookSeat.filter((item) => item.id !== selectedSeat.id))
+        setSeatDetails((seatDetails) => seatDetails.filter((item) => item !== selectedSeat.id))
         if (selectedSeat.offerPrice === 0) {
           dispatch(decrement(selectedSeat.seatCost))
         } else {
@@ -208,65 +197,176 @@ const GetBus = () => {
     }
   }
 
-  console.log('book seat after ', bookSeat);
 
-  function passengerDetails(e: React.ChangeEvent<HTMLInputElement>): void {
-    const name = e.target.name
-    const value = e.target.value
-    setPassengers({ ...passengers, [name]: value })
-  }
-
-  function addPassenger(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    const seat = e.currentTarget.value
-    if (!pass.some((item) => item.id === parseInt(seat))) {
-      setPass((prev) => {
-        return [...prev, { id: parseInt(seat), status: 'booked', passengerName: passengers.passengerName, passengerEmail: passengers.passengerEmail, passengerPhone: passengers.passengerPhone, passengerAge: passengers.passengerAge }];
-      });
-    }
-    const status: string = 'booked'
-    if (custId) {
-      const c = parseInt(custId)
-      setCustomerId(c)
-    }
-    setBookingData({ customerId: customerId, busId: busId, date: date.date, noOfSeats: noOfSeats, totalAmount: totalAmount, status: status, seatsId: pass })
-  }
   const noOfSeats = bookSeat.length
 
-  async function api(url: string = "", bookingData = {}) {
-    const result = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(bookingData),
-    })
-    return result.json();
+  function booking() {
+    if (seatDetails.length > 0) {
+      navigate('/bookingProcess', { state: { busId: busId, date: date.date, noOfSeats: noOfSeats, totalAmount: totalAmount, status: 'status', seats: seatDetails } })
+    } else {
+      alert('select seat to proceed booking')
+    }
+
   }
 
+  function remove(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    const id = e.currentTarget.value
+    const selectedSeat = seats.find((item) => item.id === parseInt(id));
+    console.log('kijijiji', selectedSeat);
+    if (selectedSeat) {
+      if (bookSeat.some((seat) => seat.id === selectedSeat.id))
+        setBookSeat((bookSeat) => bookSeat.filter((item) => item.id !== selectedSeat.id))
+      setSeatDetails((seatDetails) => seatDetails.filter((item) => item !== selectedSeat.id))
+      if (selectedSeat.offerPrice === 0) {
+        console.log('seat cost  remove', selectedSeat.seatCost);
 
-  function booking() {
-    if (!bookingData) {
-      alert('enter all details')
-    } else {
-      api(`${process.env.REACT_APP_apiURL}/userBooking/addBooking`, bookingData).then((data) => {
-        if (data.success === true) {
-          alert('booking completed')
-          navigate('/booking')
-        } else {
-          alert(data.message)
-        }
+        dispatch(decrement(selectedSeat.seatCost))
+      } else {
+        dispatch(decrement(selectedSeat.offerPrice))
+        console.log('seat cost  remove', selectedSeat.offerPrice);
 
-      })
+      }
     }
   }
 
+
+  console.log('book seat', bookSeat);
+  console.log('seat only ', seatDetails);
   return (
     <div >
-      <Navbar></Navbar>
-      <div>
-        <div className="viewBusMain">
+      <div className="navDiv">
+        <Navbar></Navbar>
+      </div>
+      <div className="viewBusMain">
+        <div className="sideBar">
+          <h3>Filters</h3>
+          <div>
+            <div className="timeFilter">
+              <h4>Time Filter</h4>
+              <div>
+                <input id='one' type="checkbox" className="ck" style={{ display: "none" }} value={1} />
+                <div className="innerCheckbox" >
+                  <label htmlFor='one'>
+                    <div className="checkboxDiv">
+                      <WiSunrise />
+                    </div>
+                  </label>
+                  <label className="filterLabel">6 AM to 12 PM</label>
+                </div>
+              </div>
+
+              <div>
+                <input type="checkbox" className="checkBox" value={2} />
+                <div className="innerCheckbox">
+                  <label>
+                    <div className="checkboxDiv">
+                      <TbSunset2 />
+                    </div>
+                  </label>
+                  <label className="filterLabel">12 PM to 6 PM</label>
+                </div>
+              </div>
+
+              <div>
+                <input id='two' type="checkbox" className="checkBox" value={3} />
+                <div className="innerCheckbox">
+                  <label htmlFor="two">
+                    <div className="checkboxDiv">
+                      <IoCloudyNightOutline />
+                    </div>
+                  </label>
+                  <label className="filterLabel"> 6 PM to 12 AM</label>
+                </div>
+              </div>
+
+
+              <div>
+                <input id="four" type="checkbox" className="checkBox" value={4} />
+                <div className="innerCheckbox">
+
+                  <label htmlFor="four">
+                    <div className="checkboxDiv">
+                      <IoCloudyNightSharp />
+                    </div>
+                  </label>
+                  <label className="filterLabel"> 12 AM to 6 AM</label>
+                </div>
+              </div>
+
+            </div>
+
+
+            <div className="Amenities">
+              <h4>Bus Amenities</h4>
+
+              <div>
+                <input type="checkbox" className="checkBox" value={"cctv"} />
+                <div className="innerCheckbox">
+                  <label>
+                    <div className="checkboxDiv">
+                      <GiCctvCamera />
+                    </div>
+                  </label>
+                  <label className="filterLabel">CCTV </label>
+                </div>
+
+              </div>
+
+
+              <div>
+                <input type="checkbox" className="checkBox" value={"blanket"} />
+
+                <div className="innerCheckbox">
+                  <label>
+                    <div className="checkboxDiv">
+                      <BiBlanket />
+                    </div>
+                  </label>
+                  <label className="filterLabel">Blanket </label>
+                </div>
+              </div>
+
+
+              <div>
+                <input type="checkbox" className="checkBox" value={"mTicket"} />
+
+                <div className="innerCheckbox">
+                  <label>
+                    <div className="checkboxDiv">
+                      <IoTicket />
+                    </div>
+                  </label>
+                  <label className="filterLabel">M-Ticket</label>
+                </div>
+              </div>
+
+              <div>
+                <input type="checkbox" className="checkBox" value={"charging"} />
+                <div className="innerCheckbox">
+                  <label>
+                    <div className="checkboxDiv">
+                      <PiPlugChargingFill />
+                    </div>
+                  </label>
+                  <label className="filterLabel">Charging Point</label>
+                </div>
+              </div>
+
+              <div>
+                <input type="checkbox" className="checkBox" value={"emergency"} />
+                <div className="innerCheckbox">
+                  <label>
+                    <div className="checkboxDiv">
+                      <IoMdCall />
+                    </div>
+                  </label>
+                  <label className="filterLabel">Emergency Number</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="buspart">
           <div className="buses">
             {
               busData.map((item) => {
@@ -277,7 +377,7 @@ const GetBus = () => {
                     <p>Destination:{item.destination}</p>
                     <div className="dateSelect">
                       <input className="date" type="date" value={date.date} name="date" onChange={(e) => handleChange(e)} />
-                      <button className="button" onClick={(e) => ViewSeats(e)} value={item.id}>Check Seats</button>
+                      <button className="checkButton" onClick={(e) => ViewSeats(e)} value={item.id}>Check Seats</button>
                     </div>
                   </div>
                 )
@@ -287,6 +387,7 @@ const GetBus = () => {
           {
             isSeat ? (
               <div className="viewSeats">
+                <p>select seats by clicking on the seat number</p>
                 <table className="seatTable">
                   <thead className="tableHead">
                     <tr>
@@ -323,30 +424,39 @@ const GetBus = () => {
                     })
                   }
                 </table>
-                <div className="markedSeat">
-                  {bookSeat.map((s) => {
-                    return (
-                      <div key={s.id} className="passengerDetails">
-                        <fieldset className="field" key={s.id}>
-                          <p>Seat Number{s.id} </p>
-                          <input type="text" placeholder="passenger name" name="passengerName" onChange={(e) => passengerDetails(e)} /><br></br>
-                          <input type="email" placeholder="passenger email" name="passengerEmail" onChange={(e) => passengerDetails(e)} /><br></br>
-                          <input type="number" placeholder="passenger phone" name="passengerPhone" onChange={(e) => passengerDetails(e)} /><br></br>
-                          <input type="number" placeholder="passenger age" name="passengerAge" onChange={(e) => passengerDetails(e)} /><br></br>
-                          <button value={s.id} onClick={(e) => addPassenger(e)}>Add</button>
-                        </fieldset>
+
+                {
+                  seatMessage ?
+                    (
+                      <div className="addtocart">
+                        <p className="seatSelected">Selected Seat</p>
+                        <div>
+                          {
+                            seatDetails.map(s => {
+                              return (
+                                <div className="seatCart" key={s}>
+                                  <p>{s}</p>
+                                  <button value={s} className="removebtn" onClick={(e) => remove(e)}>remove</button>
+                                </div>
+                              )
+                            })
+                          }
+                        </div>
+
+
+                        <p>Total: <span>{totalAmount}</span></p>
+                        <button className="checkButton" onClick={booking}>continue Booking</button>
+
                       </div>
-                    )
-                  })
-                  }
-                  <p>Total: <span>{totalAmount}</span></p>
-                  <button className="bookbtn" onClick={booking}>Add Booking</button>
-                </div>
+                    ) : (<></>)
+                }
               </div>
             ) : (<></>)
           }
         </div>
+
       </div>
+      <Footer></Footer>
     </div>
   )
 }

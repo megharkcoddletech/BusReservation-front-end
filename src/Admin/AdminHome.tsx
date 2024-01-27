@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import '../USer/ViewBus/viewBus.css';
 import { TbBusStop } from "react-icons/tb";
 import './adminHome.css'
 import AdminNavbar  from "./AdminNavbar";
 import { useNavigate } from "react-router-dom";
 import AdminFooter from "../Footer/Footer";
-
+import GetApiCall from "../GetApi/GetApiCall";
 
 interface Bus {
   main: string
@@ -33,45 +32,33 @@ const AdminHome = () => {
 
   const navigate =useNavigate()
 
-  const token= localStorage.getItem('token')  
   const [busData, setBusData] = useState<Bus[]>([])
   const[seats, setSeats] = useState([])
-  useEffect(() => {
-    const fetch = async () => {
-      const url = `${process.env.REACT_APP_apiURL}/userBus/viewBuses`
-
-      const { data } = await axios.get(url, {
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-      }
-      )
-      const buses = data.data.data
-      setBusData(buses);
+  const [loading, setLoading] = useState<boolean>(true)
+    if(loading){
+      const response = GetApiCall( `${process.env.REACT_APP_apiURL}/userBus/viewBuses`)   
+      response.then(res =>{
+       const bus = res.data
+         setBusData(bus)
+      }).catch (err =>{
+        console.log(err);
+      })
+     setLoading(false)
     }
-    fetch();
-  }, [token])
-
-
+   
   function getSeats(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     const busId = e.currentTarget.value
     
-    if(busId!== undefined) {
-      axios(`${process.env.REACT_APP_apiURL}/adminBus/adminViewSeats?busId=${busId}`, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'multipart/form-data',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      }).then(res => {
-        const seat = res.data.data
-        setSeats(seat)
+    if(busId !== undefined) {
 
-      }).catch(e => {
-        console.log(e);
+      const getSeats = GetApiCall(`${process.env.REACT_APP_apiURL}/adminBus/adminViewSeats?busId=${busId}`)
+      getSeats.then(res => {
+        const data = res
+        console.log('seat data',data);
+        
+        setSeats(res)
+      }).catch(err =>{
+        console.log(err);
       })
     }
   }
@@ -81,11 +68,10 @@ const AdminHome = () => {
   }
 
   return (
-    <div >
+    <div className="adminRoot" >
       <AdminNavbar></AdminNavbar>
       <div>
-        <div>         
-        </div>
+
         <h1>All Buses</h1>
 
         <div className="viewBusMain">

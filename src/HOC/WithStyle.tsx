@@ -17,7 +17,7 @@ const WithStyle = (Element: React.FC<ElementProps>) => {
         const cardStyle: React.CSSProperties = {
             width: 400,
             textAlign: "center",
-            backgroundColor: 'rgb(222, 208, 189)',
+            backgroundColor: 'rgb(197, 174, 174)',
             borderSpacing: 30,
             borderRadius: 5
         };

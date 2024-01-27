@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './userLogin.css';
-import { RootState } from "../redux/store";
-import { useDispatch, useSelector } from "react-redux";
-import { userToken } from "../redux/UserCred";
+import { useDispatch } from "react-redux";
+import { userToken, validUser } from "../redux/UserCred";
+import PostApiCall from "../GetApi/PostApiCall";
 
 type Auth = { username: string; password: string }
 
@@ -11,7 +11,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useSelector((state: RootState) => state.UserCred)
+
   const [credentials, setCredentials] = useState<Auth>(
     {
       username: "",
@@ -23,27 +23,11 @@ const Login = () => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value.trim() })
   }
 
-
-
-  async function callApi(url: string = "", data = {}) {
-    const result = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(data),
-    })
-    return result.json();
-  }
-
-
   const auth = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (credentials.username === 'admin') {
-      callApi(`${process.env.REACT_APP_apiURL}/adminAuth/login`, credentials).then((data) => {
+      PostApiCall(`${process.env.REACT_APP_apiURL}/adminAuth/login`, credentials).then((data) => {
         if (data.success === true) {
-          dispatch(userToken(data.data))
           localStorage.setItem('token', data.data)
           navigate('/adminHome')
         }
@@ -53,17 +37,21 @@ const Login = () => {
       })
     } else {
 
-      callApi(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {
+      PostApiCall(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {
         if (data.success === true) {
           const response = data.data
 
           dispatch(userToken(response.token))
+          dispatch(validUser(true))
+
           localStorage.setItem('user', response.token)
           const user = response.checkLoginQuery
 
           user.forEach((item: { id: any; }) => {
             const customerId = item.id
-            localStorage.setItem('customerId', customerId)
+            console.log('cust id login', customerId, typeof customerId);
+            
+            localStorage.setItem('customerId',   customerId)
           });
           navigate('/home')
         }
@@ -73,7 +61,6 @@ const Login = () => {
       })
     }
   };
-
 
   return (
     <div className="loginMain">

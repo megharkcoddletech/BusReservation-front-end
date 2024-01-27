@@ -13,9 +13,10 @@ import AdminViewSeats from './Admin/AdminViewSeats';
 import AdminAddBus from './Admin/AdminAddBus';
 import AdminOffers from './Admin/AdminOffers';
 import AdminHome from './Admin/AdminHome';
+import BookingProcess from './USer/Booking/BoookingProcess';
+import FirstHome from './FirstHome/FirstHome';
 
 
-// import AdminHome from './Admin'
 
 function App() {
 
@@ -24,16 +25,18 @@ function App() {
     <Provider store={store}>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<FirstHome />} />
+        <Route path='/login' element = {<Login/>} />
         <Route path='/adminHome' element = {<AdminHome/>} />
         <Route path="/Home" element={<Home />} />
         <Route path='/signUp' element={<SignUP />} />
         <Route path='/viewBus' element={<GetBus />} />
-        <Route path='/booking' element = {<Booking width={400} textAlign={'center'} backgroundColor={'rgb(222, 208, 189)'} borderSpacing={30} borderRadius={5}/>}/>
-        <Route path='/ticket' element = {<Ticket width={400} textAlign={'center'} backgroundColor={'rgb(222, 208, 189)'} borderSpacing={30} borderRadius={5}/>}/>
+        <Route path='/booking' element = {<Booking width={400} textAlign={'center'} backgroundColor={'rgb(197, 174, 174)'} borderSpacing={30} borderRadius={5}/>}/>
+        <Route path='/ticket' element = {<Ticket width={400} textAlign={'center'} backgroundColor={'rgb(197, 174, 174)'} borderSpacing={30} borderRadius={5}/>}/>
         <Route path='/adminAddBus' element = {<AdminAddBus/>} />
         <Route path='/AdminOffers' element = {<AdminOffers/>} />
-        <Route path='/adminViewSeats' element = {<AdminViewSeats width={400} textAlign={'center'} backgroundColor={'rgb(222, 208, 189)'} borderSpacing={30} borderRadius={5}/>} />
+        <Route path='/adminViewSeats' element = {<AdminViewSeats width={400} textAlign={'center'} backgroundColor={'rgb(197, 174, 174)'} borderSpacing={30} borderRadius={5}/>} />
+        <Route path='/bookingProcess' element = { <BookingProcess/>}/>
       </Routes>
     </BrowserRouter>
     </Provider>

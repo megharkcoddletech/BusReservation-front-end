@@ -4,7 +4,7 @@ import UserCred from "./UserCred";
 const store = configureStore({
     reducer:{
         totalAmount: totalAmountSlice,
-        UserCred: UserCred
+        UserCred: UserCred,
     }
 })
 

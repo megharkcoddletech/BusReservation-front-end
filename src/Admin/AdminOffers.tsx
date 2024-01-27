@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AdminNavbar from "./AdminNavbar";
-import axios from "axios";
+import GetApiCall from "../GetApi/GetApiCall";
 
 interface Offer {
     id: number;
@@ -20,29 +20,13 @@ const AdminOffers = () => {
 
     const [offers, setOffers] = useState<Offer[]>([])
 
-    const token = localStorage.getItem('token')
-    useEffect(()=> {
-        const fetch = async () => {
-            const url = `${process.env.REACT_APP_apiURL}/adminBus/viewOffers`
-      
-            const { data } = await axios.get(url, {
-              headers: {
-                'Content-type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-            }
-            )
+    const response = GetApiCall( `${process.env.REACT_APP_apiURL}/adminBus/viewOffers`)
 
-            if(data.succes === true) {
-                const buses = data.data
-                setOffers(buses);
-            } 
-          }
-          fetch();
-    }, [token])    
-       console.log('poff' ,offers);
-       
+    response.then(res => {
+        const offer = res.data
+        setOffers(offer);
+
+    })   
     return (
         <div>
             <AdminNavbar></AdminNavbar>
@@ -51,7 +35,6 @@ const AdminOffers = () => {
             </p>
         </div>
     )
-
 }
 
 export default AdminOffers

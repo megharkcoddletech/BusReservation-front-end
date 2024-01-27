@@ -1,38 +1,20 @@
 .mainClass {
   display: block;
-  max-width: 1900px;
+  max-height: 1000px;
   margin: 0 auto;
   padding: 10px 20px;
+  background-image: url('../../media/dd.jpg');
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.subMain {
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
 .Home {
   text-align: center;
-}
-
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100px;
-  background-color: rgb(35, 102, 145);
-  padding: 0px 30px;
-}
-
-.navHead {
-  font-size: 40px;
-  color: coral;
-}
-
-.leftNav {
-  display: flex;
-  width: 200px;
-  justify-content: space-around;
-}
-
-.userIcon {
-  font-size: 35px;
-  box-shadow: 0px 1px 1px 0px;
-  position: relative;
 }
 
 .viewBusOption {
@@ -61,11 +43,17 @@ nav {
   justify-content: center;
   align-items: center;
   margin-top: -20px;
-  border: 1px solid;
-  box-shadow: 0px 2px 1px 3px;
-  height: 100px;
+  height: 143px;
   border-radius: 20px;
-  background-color: rgb(220, 238, 245);
+  background-color: white;
+}
+
+.choose {
+  width: 80%;
+  margin: 0 auto;
+  opacity: .8;
+  border-radius: 20px;
+  padding: 55px;
 }
 
 .row {
@@ -78,6 +66,10 @@ nav {
   border: 0;
   height: 50px;
   padding: 10px 20px;
+}
+
+.busInputs:hover {
+  border: 0;
 }
 
 label {
@@ -97,27 +89,132 @@ label {
 }
 
 .banner {
-  height: 1000px;
+  height: 800px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('/media/jj.jpg');
+  flex-direction: column;
+  margin-top: -50px;
+}
+
+.bannerHeading {
+  font-size: 55px;
+  width: 600px;
+  color: azure;
+}
+
+.booking {
+  color: aliceblue;
+
+}
+
+.booknow:hover {
+  background-color: black;
+  color: white;
+}
+
+.booknow {
+  border-radius: 35px;
+  padding: 20px 25px;
+  border: 0px;
+  color: white;
+  background-color: chocolate;
+}
+
+.features {
+  display: flex;
+  margin-bottom: 50px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardImg {
+  width: 250px;
+  height: 250px;
   background-repeat: no-repeat;
   background-size: cover;
 }
 
+.cardImage1 {
+  background-image: url('../../media/c1.jpg');
+}
+
+.cardImage2 {
+  background-image: url('../../media/t\ insu.jpg');
+}
+
+.cardImage3 {
+  background-image: url('../../media/cust\ suport.jpg');
+}
+
+.specialities {
+  display: flex;
+  flex-direction: column;
+}
+
+.deals {
+  align-self: center;
+  background-image: url('../../media/deals\ 1.jpg');
+  width: 250px;
+  height: 250px;
+  margin: 20px;
+}
+
+.featureAbout {
+  padding: 10px;
+  margin: 20px;
+  text-align: justify;
+}
+
+.stepsMain {
+  display: flex;
+  margin-bottom: 200px;
+  justify-content: space-around;
+}
+
 .steps {
-  height: 700px;
-  background-image: url('/media/abbb.jpg');
+  height: 600px;
+  width: 500px;
+  background-image: url('../../media/abbb.jpg');
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: cover;
+}
+
+.details {
+  display: flex;
+  margin: 20px;
+}
+
+.experience {
+  background-image: url('../../media/travel\ experience.jpg');
+  width: 250px;
+  height: 250px;
+  margin: 20px;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+
+}
+
+.tracking {
+  background-image: url('../../media/gps\ tracking.jpg');
+  width: 250px;
+  height: 250px;
+  margin: 20px;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .about {
   height: 650px;
   margin-top: -60px;
   margin-bottom: -10px;
-  background-image: url('/media/aboutBG.webp');
+  background-image: url('../../media/aboutBG.webp');
   background-repeat: no-repeat;
   background-size: cover;
   padding: 40px;
@@ -130,10 +227,6 @@ label {
 footer {
   background-color: darkgray;
   width: 100%;
-}
-
-.booking {
-  background-color: rgb(35, 102, 145);
 }
 
 .socialAccounts {
@@ -175,4 +268,11 @@ footer {
   text-decoration: none;
   padding: 10px;
   color: black;
+}
+
+.profile {
+  width: 250px;
+  height: 350px;
+  background-color: rgb(106, 98, 87);
+  float: right;
 }

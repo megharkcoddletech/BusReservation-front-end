@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import '../USer/SignUp/signUp.css'
 import { useNavigate } from "react-router-dom";
+import AdminNavbar from "./AdminNavbar";
+import PostApiCall from "../GetApi/PostApiCall";
 
 type User = {
    name: string;
@@ -13,9 +15,6 @@ type User = {
 
 const AdminAddBus = () => {
   const navigate = useNavigate();
-
-  const token= localStorage.getItem('token')
-
   const [data, setData] = useState<User>(
     {
         name: '',
@@ -31,42 +30,27 @@ const AdminAddBus = () => {
     setData({ ...data, [e.target.name]: e.target.value.trim() });
   }
 
-  console.log('data ap', data);
-  
-
-  async function api(url: string = "", data = {}) {
-    const result = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-},
-      body: JSON.stringify(data),
-    })
-    return result.json();
-  }
-
   const register = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-
     e.preventDefault();
-
     if (!data.name || !data.busNumber || !data.type || !data.farePerKm
       || !data.ratings || !data.status ) {
       alert('fill empty field')
     } else {
-      api(`${process.env.REACT_APP_apiURL}/adminBus/addBus`, data).then((data) => {
+      PostApiCall(`${process.env.REACT_APP_apiURL}/adminBus/addBus`, data).then((data) => {
         if (data.success === true) {
           alert('added new bus')
           navigate('/adminHome')
         } else {
-          alert(data.message)
+          console.log('api call', data);
+          alert(data)
         }
       })
     }
   }
   return (
-    <div className="signUp">
+    <div style={{backgroundColor: "cadetblue"}}>
+      <AdminNavbar></AdminNavbar>
+      <div className="signUp" style={{boxShadow: "0px"}}>
       <div>
         <h1>Add Bus</h1>
       </div>
@@ -82,6 +66,8 @@ const AdminAddBus = () => {
         <button className="signUpbtn" onClick={(e) => register(e)}>Add Bus</button>
       </form>
     </div>
+    </div>
+
   );
 }
 

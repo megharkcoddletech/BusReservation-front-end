@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import './signUp.css'
 import { useNavigate } from "react-router-dom";
+import PostApiCall from "../../GetApi/PostApiCall";
 
 type User = {
   name: string; username: string;
@@ -26,19 +27,6 @@ const SignUp = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value.trim() });
   }
-
-  async function api(url: string = "", data = {}) {
-    const result = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(data),
-    })
-    return result.json();
-  }
-
   const register = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 
     e.preventDefault();
@@ -47,14 +35,13 @@ const SignUp = () => {
       || !data.age || !data.contactNumber || !data.gender) {
       alert('fill empty field')
     } else {
-      api(`${process.env.REACT_APP_apiURL}/userAuth/signup`, data).then((data) => {
+      PostApiCall(`${process.env.REACT_APP_apiURL}/userAuth/signup`, data).then((data) => {
         if (data.success === true) {
           alert('user registered')
           navigate('/home')
         } else {
           alert(data.message)
         }
-
       })
     }
   }
