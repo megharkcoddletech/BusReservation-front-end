@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import WithStyle from "../../HOC/WithStyle";
@@ -45,35 +45,47 @@ const Booking: React.FunctionComponent = (style) => {
     })
     const [bookingId, setBookingId] = useState<{ bookingId: number }>({ bookingId: 0 })
 
-    const [currentDate, setCurrentDate] = useState<boolean>(false)
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
-        setDate({ ...date, [e.target.name]: e.target.value })
-    }
 
-    const getBooking = GetApiCall(`${process.env.REACT_APP_apiURL}/userBooking/viewBooking`)
-    getBooking.then(res => {
-        console.log('booking res', res);
-    }).catch(err => {
-        console.log(err);
-    })
+const today:Date = new Date();
+const day = today.getFullYear() + "-" + today.getMonth() + 1 + "-" + today.getDate();
 
 
-    if (date.date !== undefined) {
-        const checkBooking = GetApiCall(`${process.env.REACT_APP_apiURL}/userBooking/viewBooking?date=${encodeURIComponent(date.date)}`)
-        checkBooking.then(res => {
-            console.log('filtr booking', res);
+useEffect(()=>{
+    if (!date) {
+        setDate({date: day});
+      }
 
-            if (Array.isArray(res) && res.length > 0) {
-                setNoBooking(false)
-                setBookingDetails(res)
-                setCurrentDate(false)
-            } else {
-                setNoBooking(true)
-            }
-        }).catch(e => {
-            console.log(e);
+if (date !== undefined) {
+      const checkBooking = GetApiCall(
+        `${process.env.REACT_APP_apiURL}/userBooking/viewBooking?date=${encodeURIComponent(date.date)}`
+      );
+      checkBooking.then((res) => {
+          if (Array.isArray(res) && res.length > 0) {
+            setNoBooking(false);
+            setBookingDetails(res);
+          } else {
+            setNoBooking(true);
+          }
         })
+        .catch((e) => {
+          console.log(e);
+        });
+    } else {
+      const getBooking = GetApiCall(
+        `${process.env.REACT_APP_apiURL}/userBooking/viewBooking`
+      );
+      getBooking
+        .then((res) => {
+          setBookingDetails(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
+  }, [date, day]);
+
+
+    
 
     function viewTicket(e: any) {
 
@@ -90,6 +102,31 @@ const Booking: React.FunctionComponent = (style) => {
 
         })
     }
+
+    function cancelBooking(e: React.MouseEvent<HTMLButtonElement, MouseEvent>,bookingId: number) {
+        const token = localStorage.getItem("token");
+        let url = `${process.env.REACT_APP_apiURL}/userBooking/bookingCancel`;
+        const requestOptions = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: "cancelled", bookingId: bookingId }),
+        };
+        fetch(url, requestOptions)
+          .then((res) => {
+            console.log(res.json());
+            if (res.ok) {
+              alert("ticket cancelled");
+              navigate("/booking");
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }
 
     if (ticket.length > 0) {
         navigate('/ticket', { state: { ticket, bookingId } })
@@ -119,12 +156,7 @@ const Booking: React.FunctionComponent = (style) => {
                                     (
                                         <div className="BookingMain">
                                             <p>no booking
-                                                {
-                                                    currentDate ?
-                                                        (
-                                                            'today'
-                                                        ) : (<></>)
-                                                }
+                                                
                                             </p>
                                         </div>
                                     ) : (
@@ -175,7 +207,10 @@ const Booking: React.FunctionComponent = (style) => {
                                                                     <td>{item.noOfSeats}</td>
                                                                     <td>{item.totalAmount}</td>
                                                                     <td>{item.status}</td>
-                                                                    <td><button value={item.bookingId} onClick={(e) => viewTicket(e)}>view Tickets</button></td>
+                                                                    <td><button value={item.bookingId} className="cancelTicket" onClick={(e) => viewTicket(e)}>view Tickets</button></td>
+                                                                    <td>
+                                                                    <button className="cancelTicket" onClick={(e) =>cancelBooking(e, item.bookingId)}>cancel Booking</button>
+                                                                    </td>
                                                                 </tr>
                                                             )
 

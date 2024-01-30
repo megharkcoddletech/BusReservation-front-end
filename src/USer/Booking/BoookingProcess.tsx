@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { useLocation, useNavigate, } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import './BookingProcess.css';
@@ -25,7 +25,7 @@ interface BookingDetails {
 }
 
 interface People {
-    id: string;
+    id: number;
     status: string
     passengerName: string;
     gender: string | number;
@@ -33,25 +33,20 @@ interface People {
 }
 
 interface Seat {
-    id: string;
+    id: number;
     status: string;
     passengerName: string;
     gender: string | number;
     passengerAge: number;
 }
 
-
 const BookingProcess = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-    const [gender, setGender] = useState<string>('')
 
     const [paymentPart, setPaymentPart] = useState<boolean>(true)
     const [paymentOption, setPaymentOption] = useState<string>('')
-    const [success, setSuccess] = useState<boolean>(false)
-
-    const [seatId, setSeatId] = useState<Seat[]>([])
 
     const [passenger, setPassenger] = useState<Passenger>(
         {
@@ -71,8 +66,6 @@ const BookingProcess = () => {
 
 
     const seats = location.state.seats
-    console.log('location', location.state);
-
 
     function passengerDetails(e: React.ChangeEvent<HTMLInputElement>, seatId: number) {
 
@@ -87,12 +80,6 @@ const BookingProcess = () => {
     }
 
 
-    useEffect(() => {
-        console.log('seatId', seatId);
-
-    }, [seatId])
-
-
     function selectPayment() {
         setPaymentPart(false)
 
@@ -100,54 +87,41 @@ const BookingProcess = () => {
         Object.keys(passenger).forEach((item) => {
             const passengerId = item;
             const passengerInfo = passenger[item];
-            console.log('passenfer info', passengerInfo);
-
             const genderKey = Object.keys(passengerInfo).find(element => element.startsWith('gender'));
-
+ 
             if (genderKey !== undefined) {
                 const gender = passengerInfo[genderKey as keyof typeof passengerInfo];
-
+                
                 if (passengerInfo.passengerAge && passengerId) {
                     const passengerObject = {
-                        id: passengerId,
+                        id: parseInt(passengerId),
                         status: 'booked',
                         passengerName: passengerInfo.passengerName,
                         gender: gender,
                         passengerAge: passengerInfo.passengerAge,
                     };
                     seatDetails.push(passengerObject);
-                    setSeatId(seatDetails)
                 }
-
-                bookingData.seatsId = seatDetails
                 const custId = localStorage.getItem('customerId')
-                console.log('booking cust i d', custId, typeof custId)
-                bookingData.busId = location.state.busId
-                bookingData.totalAmount = parseInt(location.state.totalAmount)
-                bookingData.date = location.state.date
-                bookingData.noOfSeats = location.state.noOfSeats
-                bookingData.status = 'booked'
                 if (custId) {
                     bookingData.customerId = parseInt(custId)
+                    setBookingData({customerId: parseInt(custId), busId:location.state.busId,date:location.state.date, noOfSeats:location.state.noOfSeats, totalAmount:parseInt(location.state.totalAmount),status:'booked', seatsId:seatDetails})
+
                 }
-                console.log('booking data ', bookingData);
             }
 
         });
+        
     }
 
     function Booking() {
-        console.log('ok');
         console.log('inside bboking boking dat ', bookingData);
 
         if (bookingData.date) {
 
             PostApiCall(`${process.env.REACT_APP_apiURL}/userBooking/addBooking`, bookingData).then((data) => {
-                console.log('call api', data);
-
                 if (data.success === true) {
                     alert('booking completed')
-                    setSuccess(true)
                     navigate('/booking')
                 } else {
                     alert(data.message)
@@ -165,12 +139,7 @@ const BookingProcess = () => {
             <div className="bookingMain">
 
                 {
-                    success ?
-                        (
-                            <div className="succes">
-
-                            </div>
-                        ) : (
+                
                             paymentPart ?
                                 (
                                     <div className="bookingProcess">
@@ -183,7 +152,7 @@ const BookingProcess = () => {
                                                 {
                                                     seats.map((seatId: number, index: number) => {
                                                         return (
-                                                            <div key={index} className="passengerDetails">
+                                                            <div key = {seatId} className="passengerDetails">
                                                                 <div className="seatNumber">{seatId}</div>
                                                                 <input className="passenger name" type="text" placeholder="passenger name" name={`passengerName`} onChange={(e) => passengerDetails(e, seatId)} /><br></br>
                                                                 <input className="passenger age" type="number" placeholder="passenger age" name={`passengerAge`} onChange={(e) => passengerDetails(e, seatId)} /><br></br>
@@ -201,7 +170,11 @@ const BookingProcess = () => {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="proceedtoPayment" onClick={() => selectPayment()}>proceed to payment</div>
+                                          <div>
+                                            <button  className="proceedtoPayment" onClick={() => selectPayment()}>
+                                               proceed to payment
+                                               </button>
+                                           </div>
                                     </div>
                                 ) : (
                                     <div className="bookingProcess">
@@ -234,16 +207,17 @@ const BookingProcess = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <button>
 
-                                            <div className="proceedtoPayment" onClick={Booking}>pay {location.state.totalAmount} via {paymentOption}</div>
-                                        </button>
+                                            <div>
+                                                
+                                              <button className="proceedtoPayment" onClick={Booking}>pay {location.state.totalAmount} via {paymentOption}</button>
+                                        </div>
                                     </div>
                                 )
 
-
-                        )
-                }
+                                }
+                    
+                
                 <div className="bookingDetails">
                     <div>
 

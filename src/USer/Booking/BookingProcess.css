@@ -53,7 +53,6 @@ label {
 }
 
 .seatNumber {
-    border: 1px black solid;
     width: 35px;
     height: 28px;
     border-radius: 10px;
@@ -89,6 +88,7 @@ label {
     font-size: 20px;
     background-color: burlywood;
     border-radius: 10px;
+    width: 100%;
 }
 
 .paymentOptions {
@@ -154,4 +154,9 @@ label {
 
 .age {
     border-color: rgb(211, 30, 211);
+}
+.noBooking{
+    font-size: 35px;
+    font-weight: 400;
+    background-color: rgba(234, 234, 234, 0.779);
 }

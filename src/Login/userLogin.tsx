@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './userLogin.css';
-import { useDispatch } from "react-redux";
-import { userToken, validUser } from "../redux/UserCred";
 import PostApiCall from "../GetApi/PostApiCall";
 
 type Auth = { username: string; password: string }
@@ -10,7 +8,6 @@ type Auth = { username: string; password: string }
 const Login = () => {
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [credentials, setCredentials] = useState<Auth>(
     {
@@ -37,23 +34,16 @@ const Login = () => {
       })
     } else {
 
-      PostApiCall(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {
+      PostApiCall(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {        
         if (data.success === true) {
           const response = data.data
-
-          dispatch(userToken(response.token))
-          dispatch(validUser(true))
-
-          localStorage.setItem('user', response.token)
+          localStorage.setItem('token', response.token)
           const user = response.checkLoginQuery
-
           user.forEach((item: { id: any; }) => {
-            const customerId = item.id
-            console.log('cust id login', customerId, typeof customerId);
-            
+            const customerId = item.id            
             localStorage.setItem('customerId',   customerId)
           });
-          navigate('/home')
+          navigate('/')
         }
         else {
           alert(data.message)

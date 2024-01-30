@@ -14,8 +14,6 @@ import AdminAddBus from './Admin/AdminAddBus';
 import AdminOffers from './Admin/AdminOffers';
 import AdminHome from './Admin/AdminHome';
 import BookingProcess from './USer/Booking/BoookingProcess';
-import FirstHome from './FirstHome/FirstHome';
-
 
 
 function App() {
@@ -25,10 +23,9 @@ function App() {
     <Provider store={store}>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<FirstHome />} />
+        <Route path="/" element={<Home />} />
         <Route path='/login' element = {<Login/>} />
         <Route path='/adminHome' element = {<AdminHome/>} />
-        <Route path="/Home" element={<Home />} />
         <Route path='/signUp' element={<SignUP />} />
         <Route path='/viewBus' element={<GetBus />} />
         <Route path='/booking' element = {<Booking width={400} textAlign={'center'} backgroundColor={'rgb(197, 174, 174)'} borderSpacing={30} borderRadius={5}/>}/>

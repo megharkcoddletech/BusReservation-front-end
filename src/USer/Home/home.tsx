@@ -1,46 +1,69 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './home.css';
 import { FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
-import Footer from "../../Footer/Footer";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
 
 type Bus = {
-  startingPoint: string; destination: string; boardingTime: string; page: number
+  startingPoint: string; destination: string;
+    page: number;
 }
 
 
 const Home = () => {
 
-  const validUser = useSelector((state: RootState) => state.UserCred)
   const navigate = useNavigate()
 
-  const [bookbtn, setBookBtn] = useState<boolean>(false)
+  const [bookbtn, setBookbtn] = useState<boolean>(false)
   const [busData, setBusData] = useState<Bus>({
-    startingPoint: "",
-    destination: "",
-    boardingTime: "",
+    startingPoint: "Kannur",
+    destination: "Thiruvananthapuram",
     page: 1,
   })
+  const [date, setDate] = useState('')
+  const today: Date = new Date();
+
+  let currentDate= today.getFullYear()+ "-"+ today.getMonth()+1 +"-" + today.getDate(); 
 
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if(!date) {
+      setDate(currentDate)
+    } 
+  },[currentDate, date])
+   const dateChange =(e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = e.target.value;
+    if(selectedDate < currentDate) {
+      alert('you cannot select past dates')
+      setDate(currentDate)
+    } else {
+      setDate(selectedDate)
+
+    }
+   }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { 
     setBusData({ ...busData, [e.target.name]: e.target.value.trim() })
   }
 
   const search = () => {
     if (bookbtn === false) {
-      setBookBtn(true)
+      setBookbtn(true)
     } else {
-      setBookBtn(false)
+      setBookbtn(false)
     }
 
   }
 
   const getBus = () => {
-    navigate('/viewBus', { state: { busData } })
+    if(!date) {
+      alert('enter the date')
+    }  else if (!busData.startingPoint){
+      alert('choose your starting point ')
+    } else if (!busData.destination) {
+      alert('choose your your destinataion')
+    } else {
+      navigate('/viewBus', { state: { busData , date} })
+    }
   }
 
   return (
@@ -65,7 +88,7 @@ const Home = () => {
                       <input className="busInputs" type="text" value={busData.destination} onChange={(e) => handleChange(e)} name="destination" placeholder="To" />
                     </div>
                     <div className="row">
-                      <input className="busInputs" type="time" value={busData.boardingTime} onChange={(e) => handleChange(e)} name="boardingTime" />
+                      <input className="busInputs" type="date" value={date}  onChange={(e) => dateChange(e)} name="date" />
                     </div>
                     <div className="row">
                       <button className="search"><FiSearch className="searchIcon" onClick={getBus} />

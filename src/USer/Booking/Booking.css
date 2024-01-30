@@ -37,9 +37,12 @@
 .cancelTicket:hover {
   border: 1px;
   box-shadow: 0px 0px 2px 0px;
-  padding: 10px 20px;
 }
 
 .chooseDate {
   font-weight: 700;
+}
+.viewTicket{
+  border: 0;
+  outline: 0;
 }

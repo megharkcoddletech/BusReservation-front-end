@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { userDetails, userToken, validUser } from '../../redux/UserCred';
 import { RootState } from "../../redux/store";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import GetApiCall from "../../GetApi/GetApiCall";
 import './Navbar.css';
 import '../../media/busLogo.jpg';
@@ -18,7 +17,6 @@ type User = {
 
 const Navbar = () => {
 
-    const dispatch = useDispatch()
     const user = useSelector((state: RootState) => state.UserCred)
     const [showProfile, setShowProfile] = useState<boolean>(false)
     const [id, setId] =useState<{id:number}>({
@@ -26,7 +24,7 @@ const Navbar = () => {
     })
     const [profile, setProfile] = useState<User[]>([])
    const custId = localStorage.getItem('customerId')
-
+   const [isLogin, setIsLogin] =useState<boolean>(false)
     const navigate = useNavigate()
     function viewUser() {       
 
@@ -53,26 +51,29 @@ const Navbar = () => {
       const token =  localStorage.getItem('token')
       if(!token) {
       navigate('/')
-
+      setIsLogin(false)
+      } else {
+        setIsLogin(true)
       }
-    if(user.isLogin === false) {
-        navigate('/')
-    } 
-    })
+    }, [navigate])
 
 
     function logout() {
-        dispatch(userDetails([]))
-        dispatch(userToken(''))
         navigate('/')
-        dispatch(validUser(false))
+        console.log('islogin', isLogin);
+        localStorage.clear()
+        setIsLogin(false)
+        console.log('t',localStorage.getItem('token'));
     }
 
     function BookingPage() {
         navigate('/booking')
     }
     function home() {
-        navigate('/home')
+        navigate('/')
+    }
+    function Login(){
+        navigate('/login')
     }
 
     return (
@@ -92,9 +93,21 @@ const Navbar = () => {
                    <button onClick={BookingPage} className="navButton">
                    <p className="navText" >View Booking</p>
                    </button>
-                   <button className="navButton" onClick={logout}>
-                   <p className="navText">Logout</p>
-                   </button>
+                    {
+                        isLogin?
+                        (      
+                            <button className="navButton" onClick={logout}>
+                            <p className="navText">Logout</p>
+                            </button>
+                        ): (
+                            
+                            <button className="navButton" onClick={Login}>
+                            <p className="navText">Login</p>
+                            </button>
+                        )
+                        }
+
+
                         <div>
                         </div>
                         <FaRegUser className="userIcon" onClick={viewUser} />
@@ -110,7 +123,7 @@ const Navbar = () => {
                             {
                                 profile.map((item) => {
                                     return(
-                                        <div>
+                                        <div key={item.email}>
                                         <p>Name : {item.name }</p> 
                                         <p>Email: {item.email }</p>
                                         <p>Phone: {item.phone}</p>

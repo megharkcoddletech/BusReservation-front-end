@@ -1,64 +1,54 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import WithStyle from "../../HOC/WithStyle";
-import axios from 'axios';
 import Footer from "../../Footer/Footer";
 
 
 const Ticket: React.FunctionComponent = (style) => {
-
+    const navigate = useNavigate()
     const location = useLocation();
     const ticket = location.state.ticket
 
-    const [bookingId, setBookingId] = useState<{ bookingId: number }>({ bookingId: 0 })
-    const [seatsToCancel, setSeatsToCancel] = useState<number[]>([])
-
-    function cancelSeats(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        const id = e.currentTarget.value;
+    const  token = localStorage.getItem('token')
 
 
-        const filterSeat = seatsToCancel.some((item) => item === parseInt(id))
-        const currentBooking = ticket.filter((item: { seats_id: number; }) => item.seats_id === parseInt(id))
-        const bookId = currentBooking.map((item: { booking_id: number; }) => item.booking_id)
-
-
-        if (!filterSeat) {
-            setSeatsToCancel(prev => {
-                return [...prev, parseInt(id)];
-            })
-
-        }
-
-
-    }
-
-    console.log('ou seats to ', seatsToCancel);
-
-    function cancelBooking() {
-
-        const token = localStorage.getItem('token')
-        setBookingId(location.state.bookingId)
-        console.log('bok id', bookingId);
-        console.log('loc st bid', location.state.bookingId);
-
-        const data = {
-            bookingId: location.state.bookingId,
-            seatsToCancel: seatsToCancel
-        }
-        axios.put(`${process.env.REACT_APP_apiURL}/userBooking/cancelBooking?bookingId=${location.state.bookingId}&seatsToCancel=${seatsToCancel}`, data, {
+    async  function cancelSeats(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, booking_id:number) {
+                
+        const id = e.currentTarget.value;        
+        
+        const seatId = parseInt(id);
+        const bookiId = booking_id
+         let url = `${process.env.REACT_APP_apiURL}/userBooking/cancelSeat`;
+        
+        const requestOptions = {
+            method: 'PUT',
             headers: {
-                'Content-type': 'multipart/form-data',
+                'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
+              'Authorization': `Bearer ${token}`
+            },
+            body:JSON.stringify({ status:"cancelled", id: seatId , bookingId: bookiId})
         }
-        )
-            .then(response => {
-                console.log('res', response);
+        fetch(url, requestOptions)
+        .then((res) =>{
+            console.log(res.json());
+            if(res.ok) {
+             alert('ticket cancelled')
+             navigate('/booking')
             }
+        })
+        .then ((data) => {
+            console.log('da', data);
+
+        }
+            
             )
-    }
+            .catch((err) => {
+             console.log('err', err);
+             
+            })
+    }    
 
     return (
         <div>
@@ -68,7 +58,7 @@ const Ticket: React.FunctionComponent = (style) => {
             <div className="mainform">
                 <div className="innerdivTicket">
                     <h3>Your Ticket Details</h3>
-                    <table style={style}>
+                    <table {...style}>
                         <thead>
                             <tr>
                                 <th>
@@ -81,10 +71,7 @@ const Ticket: React.FunctionComponent = (style) => {
                                     passenger Name
                                 </th>
                                 <th>
-                                    Passenger email
-                                </th>
-                                <th>
-                                    passenger phone
+                                   gender
                                 </th>
                                 <th>
                                     passenger age
@@ -109,20 +96,15 @@ const Ticket: React.FunctionComponent = (style) => {
                                             <td>
                                                 {s.passenger_name}
                                             </td>
-                                            <td>
-                                                {s.passenger_email}
-                                            </td>
-                                            <td>{s.passenger_phone}</td>
+                                            <td>{s.gender}</td>
                                             <td>{s.passenger_age}</td>
                                             <td>{s.status}</td>
-                                            <td><button className="cancelTicket" value={s.seats_id} onClick={(e) => cancelSeats(e)}>cancel</button></td>
+                                            <td><button className="cancelTicket" value={s.seats_id} onClick={(e) => cancelSeats(e, s.booking_id)}>cancel</button></td>
                                         </tr>
                                     )
                                 })
                             }
                         </tbody>
-                        <button className="cancelTicket" onClick={cancelBooking}>Cancel booking</button>
-
                     </table>
                 </div>
             </div>
