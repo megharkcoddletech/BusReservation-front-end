@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './userLogin.css';
+import PostApiCall from "../GetApi/PostApiCall";
 
 type Auth = { username: string; password: string }
 
 const Login = () => {
+
   const navigate = useNavigate();
 
   const [credentials, setCredentials] = useState<Auth>(
@@ -17,30 +19,39 @@ const Login = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value.trim() })
   }
-  async function callApi(url: string = "", data = {}) {
-    const result = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(data),
-    })
-    return result.json();
-  }
 
   const auth = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    callApi(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {
-      if (data.success === true) {
-        localStorage.setItem('user', data.data)
-        navigate('/home')
-      }
-      else {
-        alert(data.message)
-      }
-    })
+    if (credentials.username === 'admin') {
+      PostApiCall(`${process.env.REACT_APP_apiURL}/adminAuth/login`, credentials).then((data) => {
+        if (data.success === true) {
+          localStorage.setItem('token', data.data)
+          navigate('/adminHome')
+        }
+        else {
+          alert(data.message)
+        }
+      })
+    } else {
+
+      PostApiCall(`${process.env.REACT_APP_apiURL}/userAuth/login`, credentials).then((data) => {        
+        if (data.success === true) {
+          const response = data.data
+          localStorage.setItem('token', response.token)
+          const user = response.checkLoginQuery
+          user.forEach((item: { id: any; }) => {
+            const customerId = item.id            
+            localStorage.setItem('customerId',   customerId)
+          });
+          navigate('/')
+        }
+        else {
+          alert(data.message)
+        }
+      })
+    }
   };
+
   return (
     <div className="loginMain">
       <div className="outLogin">
